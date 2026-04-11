@@ -96,13 +96,15 @@ class BrainstormPipeline:
 
             # ── b. Expander ───────────────────────────────────────────
             self.ui_print("  Expander generating idea variants...")
+            # Pass a snapshot so downstream agents can't observe future mutations
+            prior_snapshot = list(all_idea_sets) if all_idea_sets else None
             idea_set = self.expander.expand(
                 idea_doc=idea_doc,
                 critique=critique,
                 research=research,
                 round_num=round_num,
                 directive=directive,
-                prior_idea_sets=all_idea_sets if all_idea_sets else None,
+                prior_idea_sets=prior_snapshot,
             )
             all_idea_sets.append(idea_set)
 

@@ -10,10 +10,14 @@ from __future__ import annotations
 import json
 
 try:
-    from duckduckgo_search import DDGS
+    from ddgs import DDGS
     _DDGS_AVAILABLE = True
 except ImportError:
-    _DDGS_AVAILABLE = False
+    try:
+        from duckduckgo_search import DDGS  # legacy fallback
+        _DDGS_AVAILABLE = True
+    except ImportError:
+        _DDGS_AVAILABLE = False
 
 
 # ---------------------------------------------------------------------------
