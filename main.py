@@ -1,125 +1,104 @@
 #!/usr/bin/env python3
-"""
-ChiediloAClaudio — Creative Brainstorming Pipeline
-===================================================
-
-Usage:
-    python main.py                    # default 3 divergence rounds
-    python main.py --rounds 2         # fewer rounds (faster)
-    python main.py --rounds 4         # more rounds (deeper)
-    python main.py --output report.md # also save report to file
-"""
-
+"""AI Personal Trainer — Climbing (Boulder + Vie) e Calisthenics"""
 from __future__ import annotations
 import argparse
 import sys
 
 from rich.console import Console
-from rich.markdown import Markdown
 from rich.panel import Panel
-from rich.rule import Rule
-from rich.text import Text
 
 console = Console()
 
 
 def ui_print(text: str) -> None:
-    """Render agent output with rich formatting."""
-    if text.startswith("\n[") or text.startswith("["):
-        # Agent label lines
-        console.print(Text(text, style="dim cyan"))
-    elif text.startswith("┌") or text.startswith("└") or text.startswith("│"):
-        # Checkpoint box borders
-        console.print(Text(text, style="bold yellow"))
-    elif text.startswith("  ★"):
-        console.print(Text(text, style="bold green"))
-    elif text.startswith("  DIVERGENCE ROUND") or text.startswith("  Running"):
-        console.print(Text(text, style="bold blue"))
-    elif text.startswith("  SYNTHESIZING"):
-        console.print(Text(text, style="bold magenta"))
-    elif text.startswith("─" * 10):
-        console.print(Rule(style="dim"))
-    else:
-        console.print(text)
+    console.print(text)
 
 
 def ui_input(prompt: str) -> str:
-    """Styled input prompt."""
     return console.input(f"[bold green]{prompt}[/bold green]")
 
 
 def print_header() -> None:
     console.print()
     console.print(Panel.fit(
-        "[bold]ChiediloAClaudio[/bold]\n"
-        "[dim]Creative Brainstorming Pipeline[/dim]\n\n"
-        "[dim]Agents:[/dim] Harvester → Critic + Researcher → Expander → Judge → Synthesizer\n"
-        "[dim]Techniques:[/dim] Prompt chaining, parallel fan-out, SCAMPER, "
-        "constraint inversion, iterative divergence loops",
+        "[bold]AI Personal Trainer[/bold]\n"
+        "[dim]Climbing (Boulder + Vie) e Calisthenics[/dim]",
         border_style="blue",
     ))
     console.print()
 
 
-def print_report(report, output_path: str | None = None) -> None:
-    md_text = report.to_markdown()
-
-    console.print()
-    console.print(Rule("[bold magenta]BRAINSTORM REPORT[/bold magenta]"))
-    console.print()
-    console.print(Markdown(md_text))
-
-    if output_path:
-        with open(output_path, "w") as f:
-            f.write(md_text)
-        console.print(f"\n[dim]Report saved to: {output_path}[/dim]")
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Creative brainstorming pipeline powered by Claude agents"
+        prog="trainer",
+        description="AI Personal Trainer per Climbing e Calisthenics",
     )
-    parser.add_argument(
-        "--rounds",
-        type=int,
-        default=3,
-        help="Number of divergence rounds (default: 3)",
-    )
-    parser.add_argument(
-        "--output",
-        type=str,
-        default=None,
-        help="Optional path to save the final report as markdown",
-    )
+    sub = parser.add_subparsers(dest="command")
+    sub.add_parser("setup",     help="Setup iniziale: colloquio + costruzione programma")
+    sub.add_parser("workout",   help="Mostra la sessione di oggi")
+    sub.add_parser("log",       help="Registra la sessione di oggi")
+    sub.add_parser("test",      help="Registra i risultati dei test di performance")
+    sub.add_parser("progress",  help="Visualizza i progressi")
+    sub.add_parser("adjust",    help="Analizza e adatta il programma con l'AI")
+    sub.add_parser("next-week", help="Avanza manualmente alla prossima settimana")
+
     args = parser.parse_args()
 
-    if args.rounds < 1 or args.rounds > 5:
-        console.print("[red]--rounds must be between 1 and 5[/red]")
+    if not args.command:
+        print_header()
+        parser.print_help()
+        sys.exit(0)
+
+    try:
+        from trainer import storage
+    except ImportError as exc:
+        console.print(f"[red]Import error: {exc}[/red]")
+        console.print("[dim]Esegui: pip install -r requirements.txt[/dim]")
+        sys.exit(1)
+
+    if args.command != "setup" and not storage.is_setup_complete():
+        console.print("[red]Nessun profilo trovato. Esegui prima: python main.py setup[/red]")
         sys.exit(1)
 
     print_header()
 
-    # Import here so missing deps give a clean error message
     try:
-        from brainstorm.pipeline.runner import BrainstormPipeline
-    except ImportError as exc:
-        console.print(f"[red]Import error: {exc}[/red]")
-        console.print("[dim]Run: pip install -r requirements.txt[/dim]")
-        sys.exit(1)
+        if args.command == "setup":
+            from trainer.pipeline import setup_flow
+            setup_flow.run(ui_print, ui_input, console)
 
-    pipeline = BrainstormPipeline(
-        max_rounds=args.rounds,
-        ui_print=ui_print,
-        ui_input=ui_input,
-    )
+        elif args.command == "workout":
+            from trainer.pipeline import workout_flow
+            workout_flow.run(console)
 
-    try:
-        report = pipeline.run()
+        elif args.command == "log":
+            from trainer.pipeline import log_flow
+            log_flow.run(ui_print, ui_input, console)
+
+        elif args.command == "test":
+            from trainer.pipeline import test_flow
+            test_flow.run(ui_input, console)
+
+        elif args.command == "progress":
+            from trainer.pipeline import progress_flow
+            progress_flow.run(console)
+
+        elif args.command == "adjust":
+            from trainer.pipeline import adjust_flow
+            adjust_flow.run(ui_input, console)
+
+        elif args.command == "next-week":
+            program = storage.load_program()
+            if program.current_week >= program.total_weeks:
+                console.print("[yellow]Sei gia' all'ultima settimana del programma.[/yellow]")
+            else:
+                program.current_week += 1
+                storage.save_program(program)
+                console.print(f"[green]Avanzato alla settimana {program.current_week}.[/green]")
+
     except KeyboardInterrupt:
-        console.print("\n[yellow]Session interrupted.[/yellow]")
+        console.print("\n[yellow]Interrotto.[/yellow]")
         sys.exit(0)
-
-    print_report(report, output_path=args.output)
 
 
 if __name__ == "__main__":
