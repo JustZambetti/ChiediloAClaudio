@@ -1,0 +1,807 @@
+<title>Dove vivere in Europa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: pannello criteri fisso a sinistra, classifica a destra; targhe UE come segno distintivo delle città */
+:root {
+  --bg: #eef1f5;
+  --surface: #ffffff;
+  --sunken: #e4e8ee;
+  --ink: #18202c;
+  --muted: #5a6475;
+  --line: #d6dce5;
+  --accent: #8a1c3c;        /* bordeaux passaporto */
+  --accent-soft: #f3dfe5;
+  --plate: #1f3a93;         /* blu targa UE */
+  --plate-ink: #ffd34d;
+  --star: #c48a12;
+  --good: #1d7a4a;
+  --bad: #b3261e;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-data: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f131a; --surface: #171c25; --sunken: #1e2430; --ink: #e6eaf1; --muted: #9aa3b3;
+    --line: #2a3240; --accent: #e5718f; --accent-soft: #3a1d27; --plate: #2b4bb3; --plate-ink: #ffd34d;
+    --star: #e8b84a; --good: #4cc286; --bad: #f2786d; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f131a; --surface: #171c25; --sunken: #1e2430; --ink: #e6eaf1; --muted: #9aa3b3;
+  --line: #2a3240; --accent: #e5718f; --accent-soft: #3a1d27; --plate: #2b4bb3; --plate-ink: #ffd34d;
+  --star: #e8b84a; --good: #4cc286; --bad: #f2786d; color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); }
+body { color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.inner { max-width: 1340px; margin: 0 auto; }
+
+/* Header */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+.top-row { display: flex; align-items: center; gap: 12px 24px; padding-block: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand h1 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; }
+.brand span { color: var(--muted); font-size: 13px; }
+nav.tabs { display: flex; gap: 4px; margin-left: auto; background: var(--sunken); padding: 4px; border-radius: 999px; }
+nav.tabs a { text-decoration: none; color: var(--muted); padding: 6px 14px; border-radius: 999px; font-weight: 500; font-size: 14px; white-space: nowrap; }
+nav.tabs a[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
+nav.tabs a .badge { font-family: var(--f-data); font-size: 11px; background: var(--accent); color: var(--surface); border-radius: 999px; padding: 0 6px; margin-left: 4px; }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; padding-block: 20px 48px; align-items: start; }
+aside.panel { position: sticky; top: 74px; max-height: calc(100vh - 92px); overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 18px; overscroll-behavior: contain; }
+.panel-toggle { display: none; }
+@media (max-width: 920px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  aside.panel { position: static; max-height: none; display: none; }
+  aside.panel.open { display: flex; }
+  .panel-toggle { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; font-weight: 600; }
+  nav.tabs { margin-left: 0; width: 100%; }
+  nav.tabs a { flex: 1; text-align: center; padding-inline: 8px; }
+}
+.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.panel section { display: flex; flex-direction: column; gap: 10px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-btn { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 5px 11px; font-size: 13px; }
+.chip-btn:hover { border-color: var(--accent); }
+.chip-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+
+.field { display: grid; gap: 4px; }
+.field label, .field .lab { font-size: 13px; font-weight: 500; display: flex; justify-content: space-between; gap: 8px; }
+.field .lab output { font-family: var(--f-data); color: var(--muted); font-weight: 400; }
+input[type="number"], input[type="search"], select, textarea { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%; }
+input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+.check { display: flex; align-items: center; gap: 7px; font-size: 13px; cursor: pointer; }
+.check input { accent-color: var(--accent); margin: 0; }
+
+details.group { border-top: 1px solid var(--line); padding-top: 10px; }
+details.group > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; }
+details.group > summary::-webkit-details-marker { display: none; }
+details.group > summary::after { content: "+"; font-family: var(--f-data); color: var(--muted); }
+details.group[open] > summary::after { content: "−"; }
+details.group > summary small { font-weight: 400; color: var(--muted); font-family: var(--f-data); font-size: 12px; margin-left: auto; margin-right: 10px; }
+.wlist { display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
+.wrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: center; }
+.wrow .wl { font-size: 13px; min-width: 0; }
+.wrow .wl.off { color: var(--muted); }
+.wrow .pips { display: flex; gap: 3px; }
+.pip { width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--line); background: var(--bg); padding: 0; }
+.pip.on { background: var(--accent); border-color: var(--accent); }
+.pip.zero { width: 18px; font-size: 11px; line-height: 1; color: var(--muted); font-family: var(--f-data); }
+.inv { grid-column: 1 / -1; justify-self: start; font-size: 12px; border: 1px dashed var(--line); background: none; border-radius: 6px; padding: 1px 7px; color: var(--muted); }
+.inv:hover { color: var(--ink); border-color: var(--accent); }
+
+/* Classifica */
+.view-head { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 20px; margin-bottom: 14px; }
+.view-head h2 { font-size: 28px; font-weight: 700; }
+.view-head p { margin: 4px 0 0; color: var(--muted); max-width: 62ch; }
+.view-head .sort { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.view-head .sort select { width: auto; }
+ol.rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.row { display: grid; grid-template-columns: 30px 52px minmax(0, 1.25fr) minmax(0, 1.7fr) 128px 64px; gap: 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; cursor: pointer; transition: border-color .15s; }
+.row:hover { border-color: var(--accent); }
+.row.top3 { border-left: 3px solid var(--accent); }
+.pos { font-family: var(--f-data); color: var(--muted); font-size: 13px; text-align: right; }
+.plate { display: inline-flex; align-items: stretch; border: 1.5px solid var(--ink); border-radius: 4px; overflow: hidden; height: 24px; font-family: var(--f-data); font-weight: 500; font-size: 12px; background: var(--surface); }
+.plate b { background: var(--plate); color: var(--plate-ink); padding: 0 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 9px; line-height: 1; gap: 1px; }
+.plate b::before { content: "★"; font-size: 7px; }
+.plate i { font-style: normal; padding: 0 5px; display: flex; align-items: center; letter-spacing: .04em; }
+.who { min-width: 0; }
+.who strong { font-family: var(--f-display); font-size: 17px; font-weight: 700; display: block; }
+.who small { color: var(--muted); font-size: 12.5px; }
+.facts { display: flex; flex-wrap: wrap; gap: 4px 6px; min-width: 0; }
+.fact { font-family: var(--f-data); font-size: 12px; background: var(--bg); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
+.fact.good { color: var(--good); }
+.fact.bad { color: var(--bad); }
+.why { width: 100%; font-size: 12px; color: var(--muted); }
+.why .p { color: var(--good); }
+.why .m { color: var(--bad); }
+.score { display: grid; gap: 4px; }
+.score b { font-family: var(--f-data); font-size: 20px; font-weight: 500; line-height: 1; }
+.score b small { font-size: 11px; color: var(--muted); }
+.bar { height: 6px; background: var(--sunken); border-radius: 999px; overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.acts { display: flex; gap: 4px; justify-content: flex-end; }
+.icon-btn { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; font-size: 15px; line-height: 1; color: var(--muted); padding: 0; }
+.icon-btn:hover { border-color: var(--accent); color: var(--ink); }
+.icon-btn.fav-on { color: var(--star); border-color: var(--star); }
+.icon-btn.cmp-on { color: var(--surface); background: var(--accent); border-color: var(--accent); }
+@media (max-width: 760px) {
+  .row { grid-template-columns: 24px 48px minmax(0, 1fr) 64px; gap: 8px 10px; }
+  .row .facts { grid-column: 2 / -1; grid-row: 2; }
+  .row .score { grid-column: 3 / 4; grid-row: 3; }
+  .row .acts { grid-column: 4; grid-row: 3; }
+  .row .score, .row .acts { align-self: center; }
+}
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 28px; text-align: center; color: var(--muted); }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 13px; font-weight: 500; font-size: 14px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.btn.danger { color: var(--bad); }
+
+/* Drawer dettaglio */
+.scrim { position: fixed; inset: 0; background: rgb(10 14 20 / .45); z-index: 40; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(620px, 100%); background: var(--surface); z-index: 41; overflow: auto; border-left: 1px solid var(--line); padding: calc(18px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) calc(32px + env(safe-area-inset-bottom, 0px)) 20px; display: flex; flex-direction: column; gap: 20px; overscroll-behavior: contain; }
+.d-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; }
+.d-head h2 { font-size: 30px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.d-head p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.d-score { display: flex; align-items: baseline; gap: 8px; }
+.d-score b { font-family: var(--f-data); font-size: 34px; font-weight: 500; color: var(--accent); }
+.d-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.note { background: var(--bg); border-radius: var(--r); padding: 12px 14px; font-size: 14px; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tile { background: var(--bg); border-radius: 8px; padding: 10px 12px; display: grid; gap: 2px; }
+.tile span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.tile b { font-family: var(--f-data); font-weight: 500; font-size: 16px; }
+@media (max-width: 480px) { .tiles { grid-template-columns: 1fr 1fr; } }
+.mgroup h3 { font-size: 15px; margin-bottom: 6px; }
+.mrow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) 90px 44px; gap: 10px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.mrow .mv { font-family: var(--f-data); font-size: 12.5px; }
+.mrow .mr { font-family: var(--f-data); font-size: 11.5px; color: var(--muted); text-align: right; }
+.mrow.w0 .ml { color: var(--muted); }
+.mrow.w0 .bar span { background: var(--muted); opacity: .5; }
+.mrow input { padding: 3px 6px; font-family: var(--f-data); font-size: 12.5px; }
+.tax-box { border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; font-size: 14px; display: grid; gap: 4px; }
+
+/* Confronto */
+.cmp-pick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.cmp-pick select { width: auto; min-width: 200px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 13px; }
+.tag button { border: 0; background: var(--sunken); border-radius: 999px; width: 20px; height: 20px; padding: 0; line-height: 1; }
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+table.cmp { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+table.cmp th, table.cmp td { padding: 7px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+table.cmp thead th { position: sticky; top: 0; background: var(--surface); font-family: var(--f-display); font-size: 16px; }
+table.cmp td.v { font-family: var(--f-data); font-size: 12.5px; white-space: nowrap; }
+table.cmp td.best { color: var(--good); font-weight: 500; }
+table.cmp td.best::after { content: " ▲"; font-size: 9px; }
+table.cmp tr.grp th { background: var(--bg); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+table.cmp th.crit { font-weight: 500; min-width: 170px; }
+
+/* Metodo */
+.prose { max-width: 75ch; display: flex; flex-direction: column; gap: 14px; }
+.prose p { margin: 0; }
+.prose h3 { font-size: 19px; margin-top: 10px; }
+.warn { border-left: 3px solid var(--star); background: var(--surface); padding: 12px 14px; border-radius: 0 var(--r) var(--r) 0; }
+table.src { border-collapse: collapse; width: 100%; font-size: 13px; }
+table.src th, table.src td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+table.src th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.io { display: grid; gap: 8px; }
+.io textarea { min-height: 110px; font-family: var(--f-data); font-size: 12px; }
+.row-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.msg { font-size: 13px; color: var(--good); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="top gutter">
+  <div class="inner top-row">
+    <div class="brand"><h1>Dove vivere</h1><span>51 città europee a confronto</span></div>
+    <nav class="tabs" aria-label="Sezioni">
+      <a href="#classifica" data-view="classifica">Classifica</a>
+      <a href="#confronta" data-view="confronta">Confronta <span class="badge" id="cmpCount" hidden>0</span></a>
+      <a href="#metodo" data-view="metodo">Dati e metodo</a>
+    </nav>
+  </div>
+</header>
+
+<div class="gutter">
+<div class="inner layout">
+  <button class="panel-toggle" id="panelToggle" aria-expanded="false" aria-controls="panel"><span>Criteri e filtri</span><span class="num" id="panelSummary"></span></button>
+  <aside class="panel" id="panel" aria-label="Criteri e filtri">
+    <section>
+      <div class="eyebrow">Parti da un profilo</div>
+      <div class="presets" id="presets"></div>
+    </section>
+    <section>
+      <div class="eyebrow">Paletti (escludono città)</div>
+      <div class="field"><input type="search" id="q" placeholder="Cerca città o paese…" aria-label="Cerca città o paese"></div>
+      <div class="field">
+        <div class="lab"><label for="budget">Il tuo reddito netto mensile</label><output>opzionale</output></div>
+        <input type="number" id="budget" min="0" step="100" placeholder="es. 2500 € (se lavori da remoto)">
+      </div>
+      <div class="field"><div class="lab"><label for="rentMax">Affitto massimo</label><output id="rentMaxOut" class="num"></output></div><input type="range" id="rentMax" min="400" max="3000" step="50"></div>
+      <div class="field"><div class="lab"><label for="janMin">Gennaio almeno</label><output id="janMinOut" class="num"></output></div><input type="range" id="janMin" min="-5" max="18" step="1"></div>
+      <div class="field"><div class="lab"><label for="safetyMin">Sicurezza minima</label><output id="safetyMinOut" class="num"></output></div><input type="range" id="safetyMin" min="0" max="85" step="5"></div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="fNoVisa"> Senza visto (UE)</label>
+        <label class="check"><input type="checkbox" id="fEuro"> Solo euro</label>
+        <label class="check"><input type="checkbox" id="fNoIT"> Escludi Italia</label>
+        <label class="check"><input type="checkbox" id="fSea"> Mare entro 1h</label>
+        <label class="check"><input type="checkbox" id="fMount"> Montagna entro 2h</label>
+        <label class="check"><input type="checkbox" id="fBudget"> Nel mio budget</label>
+        <label class="check"><input type="checkbox" id="fFav"> Solo preferite</label>
+      </div>
+    </section>
+    <section>
+      <div class="eyebrow">Quanto conta per te (0–5)</div>
+      <div id="weights"></div>
+    </section>
+  </aside>
+
+  <main id="main" style="min-width:0">
+    <section id="view-classifica" data-viewpane="classifica"></section>
+    <section id="view-confronta" data-viewpane="confronta" hidden></section>
+    <section id="view-metodo" data-viewpane="metodo" hidden></section>
+  </main>
+</div>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" hidden></div>
+
+<script>
+"use strict";
+/* ---------------- DATI ----------------
+   Valori indicativi (stime arrotondate 2024–2025) da fonti pubbliche: vedi sezione "Dati e metodo".
+   Paesi: n nome, lang lingua, le facilità lingua per un italiano (1-5), en inglese diffuso (1-5),
+   tax prelievo % su 50k€ lordi, lgbt punteggio ILGA %, bur burocrazia (1-5), st status per cittadini UE,
+   euro, net internet fisso Mbps, reg regimi fiscali per chi si trasferisce. */
+const COUNTRIES = {
+  IT:{n:'Italia',lang:'Italiano',le:5,en:3,tax:37,lgbt:25,bur:2,st:'UE',euro:1,net:110,reg:'Nessun vantaggio se risiedi già in Italia. "Rientro cervelli": 50% del reddito esente per 5 anni solo se rientri dopo almeno 3 anni all\'estero. Flat tax 7% per pensionati che si trasferiscono in piccoli comuni del Sud.'},
+  ES:{n:'Spagna',lang:'Spagnolo',le:4,en:3,tax:31,lgbt:77,bur:4,st:'UE',euro:1,net:230,reg:'Legge Beckham: 24% flat fino a 600.000 € per 6 anni, per dipendenti trasferiti, lavoratori da remoto e imprenditori.'},
+  PT:{n:'Portogallo',lang:'Portoghese',le:3,en:4,tax:34,lgbt:70,bur:4,st:'UE',euro:1,net:180,reg:'IFICI (erede del vecchio NHR): 20% flat per 10 anni per professioni qualificate, ricerca e startup.'},
+  FR:{n:'Francia',lang:'Francese',le:3,en:3,tax:30,lgbt:60,bur:3,st:'UE',euro:1,net:270,reg:'Regime "impatriés": esenzione del premio di trasferimento e di parte dei redditi esteri per 8 anni (per chi viene assunto o trasferito).'},
+  DE:{n:'Germania',lang:'Tedesco',le:2,en:4,tax:36,lgbt:69,bur:2,st:'UE',euro:1,net:100,reg:'Nessun regime speciale per chi si trasferisce.'},
+  AT:{n:'Austria',lang:'Tedesco',le:2,en:4,tax:36,lgbt:54,bur:4,st:'UE',euro:1,net:80,reg:'Zuzugsfreibetrag: 30% esente per 5 anni, su domanda, per ricercatori e profili molto qualificati.'},
+  CH:{n:'Svizzera',lang:'Tedesco',le:2,en:3.5,tax:20,lgbt:50,bur:4,st:'CH',euro:0,net:230,reg:'Tasse basse ma variabili per cantone e comune. Libera circolazione con permesso B, ma cassa malati privata obbligatoria (circa 300–450 CHF al mese a persona).'},
+  NL:{n:'Paesi Bassi',lang:'Olandese',le:2,en:4.5,tax:32,lgbt:61,bur:5,st:'UE',euro:1,net:150,reg:'30% ruling: fino al 30% dello stipendio esentasse per 5 anni (scende al 27% dal 2027), con stipendio minimo.'},
+  BE:{n:'Belgio',lang:'Francese / Olandese',le:3,en:4,tax:42,lgbt:85,bur:3,st:'UE',euro:1,net:120,reg:'Regime expat (dal 2022): 30% dello stipendio esente come rimborso spese, con stipendio minimo intorno a 75.000 €.'},
+  LU:{n:'Lussemburgo',lang:'Francese / Tedesco / Lussemburghese',le:3,en:4,tax:29,lgbt:74,bur:4,st:'UE',euro:1,net:220,reg:'Regime impatriati: 50% del salario esente (tetto 400.000 €) per 8 anni.'},
+  DK:{n:'Danimarca',lang:'Danese',le:2,en:4.5,tax:38,lgbt:77,bur:5,st:'UE',euro:0,net:250,reg:'Regime ricercatori/esperti: 27% flat (+8% AM) per 7 anni, con stipendio minimo alto (circa 8.000 € al mese).'},
+  SE:{n:'Svezia',lang:'Svedese',le:2,en:4.5,tax:30,lgbt:63,bur:5,st:'UE',euro:0,net:200,reg:'Expert tax: 25% del reddito esente per 7 anni per profili qualificati.'},
+  NO:{n:'Norvegia',lang:'Norvegese',le:2,en:4.5,tax:30,lgbt:70,bur:5,st:'SEE',euro:0,net:230,reg:'Nessun regime rilevante. Paese SEE: libera circolazione per cittadini UE.'},
+  FI:{n:'Finlandia',lang:'Finlandese / Svedese',le:1,en:4.5,tax:33,lgbt:69,bur:5,st:'UE',euro:1,net:130,reg:'Key employee: 25% flat per 7 anni, con stipendio minimo (circa 5.800 € al mese).'},
+  IE:{n:'Irlanda',lang:'Inglese',le:4,en:5,tax:30,lgbt:59,bur:4,st:'UE',euro:1,net:140,reg:'SARP: 30% del reddito oltre 100.000 € esente per 5 anni.'},
+  UK:{n:'Regno Unito',lang:'Inglese',le:4,en:5,tax:25,lgbt:46,bur:4,st:'UK',euro:0,net:120,reg:'Dopo la Brexit serve un visto (es. Skilled Worker, con sponsor). Regime FIG: redditi esteri esenti per 4 anni per i nuovi residenti.'},
+  CZ:{n:'Rep. Ceca',lang:'Ceco',le:1,en:3.5,tax:23,lgbt:32,bur:3,st:'UE',euro:0,net:80,reg:'Per i freelance esiste una tassa forfettaria mensile (paušální daň) molto conveniente.'},
+  PL:{n:'Polonia',lang:'Polacco',le:1,en:3.5,tax:30,lgbt:18,bur:3,st:'UE',euro:0,net:200,reg:'Contratti B2B con imposta forfettaria (12% per l\'IT) molto diffusi tra i freelance; IP Box al 5%.'},
+  HU:{n:'Ungheria',lang:'Ungherese',le:1,en:3.5,tax:33.5,lgbt:22,bur:3,st:'UE',euro:0,net:220,reg:'Imposta sul reddito flat 15% (+18,5% contributi).'},
+  SI:{n:'Slovenia',lang:'Sloveno',le:1,en:4,tax:38,lgbt:60,bur:3,st:'UE',euro:1,net:150,reg:'Nessun regime rilevante.'},
+  HR:{n:'Croazia',lang:'Croato',le:1,en:4,tax:30,lgbt:42,bur:2,st:'UE',euro:1,net:80,reg:'Nessun regime per cittadini UE (il visto nomadi digitali esentasse vale solo per extra-UE).'},
+  GR:{n:'Grecia',lang:'Greco',le:1,en:3.5,tax:30,lgbt:60,bur:2,st:'UE',euro:1,net:70,reg:'Art. 5C: 50% del reddito da lavoro esente per 7 anni per chi trasferisce la residenza in Grecia.'},
+  CY:{n:'Cipro',lang:'Greco / Inglese',le:2,en:4.5,tax:18,lgbt:38,bur:2,st:'UE',euro:1,net:60,reg:'50% esente per 17 anni sopra 55.000 € l\'anno; 20% esente sotto. Status non-dom: niente tasse su dividendi e interessi.'},
+  MT:{n:'Malta',lang:'Inglese / Maltese',le:4,en:5,tax:22,lgbt:88,bur:4,st:'UE',euro:1,net:150,reg:'Regime HQP: 15% flat per profili molto qualificati (stipendio oltre circa 95.000 €). Regime non-dom.'},
+  EE:{n:'Estonia',lang:'Estone',le:1,en:4,tax:22,lgbt:46,bur:5,st:'UE',euro:1,net:120,reg:'Flat tax; utili d\'impresa non distribuiti non tassati; e-Residency per aprire un\'azienda online.'},
+  LV:{n:'Lettonia',lang:'Lettone',le:1,en:3.5,tax:31,lgbt:23,bur:4,st:'UE',euro:1,net:120,reg:'Nessun regime rilevante.'},
+  LT:{n:'Lituania',lang:'Lituano',le:1,en:3.5,tax:33,lgbt:25,bur:4,st:'UE',euro:1,net:150,reg:'Nessun regime rilevante.'},
+  RO:{n:'Romania',lang:'Rumeno',le:3,en:3.5,tax:41,lgbt:18,bur:2,st:'UE',euro:0,net:230,reg:'Imposta sul reddito flat 10% ma contributi alti; micro-impresa con imposta sul fatturato molto bassa.'},
+  BG:{n:'Bulgaria',lang:'Bulgaro',le:1,en:3,tax:22,lgbt:21,bur:2,st:'UE',euro:1,net:100,reg:'Flat tax 10% sul reddito e 10% sugli utili d\'impresa, tra le più basse dell\'UE. Euro dal 2026.'},
+};
+
+/* Città: nome, paese, popolazione area (mln), affitto 1 locale centro (€), indice spese escl. affitto (NY=100),
+   stipendio netto medio (€), prezzo acquisto centro (€/m²), media gennaio (°C), max media luglio (°C),
+   ore di sole/anno, giorni di pioggia/anno, sicurezza (0-100), sanità (0-100), PM2.5 (µg/m³),
+   trasporti (1-10), ore di volo da Milano, mare (0-2), montagna (0-2), disoccupazione (%),
+   lavoro (1-5), cultura (1-5), vita sociale (1-5), nota, correzioni rispetto al paese */
+const F = ['name','cc','pop','rent','costIdx','salary','buyM2','janT','julT','sun','rain','safety','health','pm25','transit','flight','sea','mount','unemp','jobs','culture','night','note','ov'];
+const RAW = [
+ ['Milano','IT',3.2,1400,68,2000,9500,3,30,1950,85,44,69,22,8,0,0,1,5,4,5,4,'Il polo economico d\'Italia: stipendi più alti del paese, ma affitti in forte crescita e aria tra le peggiori d\'Europa in inverno.'],
+ ['Roma','IT',4.3,1200,63,1750,6000,8,31,2500,70,47,60,13,5,1.1,1,1,7,3,5,4,'Bellezza e clima ottimi, servizi e trasporti deboli; mare a mezz\'ora (Ostia, Fregene).'],
+ ['Bologna','IT',1.0,1050,62,1750,4500,3,31,2100,75,52,70,18,6,0,1,1,4,3,4,4,'Città universitaria a misura d\'uomo, ottima cucina e sanità, snodo ferroviario centrale; affitti cresciuti molto.'],
+ ['Torino','IT',2.2,800,58,1600,3000,2,28,2100,80,50,67,21,6,0,0,2,7,3,4,3,'La grande città più economica del Nord, Alpi a un\'ora, ritmo più calmo.'],
+ ['Madrid','ES',6.8,1350,55,1900,6500,6,33,2750,60,69,78,9,9,2.0,0,2,9,4,5,5,'Capitale vivace e sicura, lavoro e vita sociale eccellenti; estati molto calde e secche.'],
+ ['Barcellona','ES',5.6,1350,58,1850,6000,10,28,2500,55,52,77,12,8,1.5,2,1,9,4,5,5,'Mare, cultura e scena tech internazionale; turismo di massa, furti frequenti e affitti alti.'],
+ ['Valencia','ES',1.8,1050,50,1500,3500,12,30,2700,45,64,75,10,7,1.7,2,0,12,3,4,4,'Spesso in cima alle classifiche degli expat: clima mite, spiaggia urbana, costi ancora ragionevoli.'],
+ ['Malaga','ES',1.0,1100,50,1400,4500,12,31,2900,45,70,74,9,6,2.5,2,1,14,3,4,4,'Costa del Sol con il clima invernale migliore della Spagna continentale; hub tech in crescita, affitti in salita.'],
+ ['Siviglia','ES',1.5,850,47,1350,3200,11,36,2900,50,66,73,10,6,2.5,1,0,17,2,4,4,'Molto economica e bellissima, ma d\'estate si superano spesso i 40 °C e il lavoro scarseggia.'],
+ ['Las Palmas','ES',0.6,900,50,1400,3000,18,26,2800,25,66,70,10,5,4.2,2,1,15,2,3,3,'Primavera tutto l\'anno (18–26 °C), grande comunità di nomadi digitali; isola lontana dal continente.'],
+ ['Bilbao','ES',1.0,950,55,1900,4500,9,25,1600,125,72,77,8,8,1.9,2,1,8,3,4,3,'Verde, ordinata, cucina basca eccezionale e stipendi sopra la media spagnola; piove molto.'],
+ ['Lisbona','PT',2.9,1400,52,1350,6500,11,28,2800,80,70,70,8,7,2.7,2,0,6.5,4,5,5,'Luce, oceano e grande comunità internazionale; affitti esplosi rispetto agli stipendi locali.'],
+ ['Porto','PT',1.8,1050,48,1150,4500,10,25,2450,110,71,72,8,6,2.4,2,1,6.5,3,4,4,'Più autentica ed economica di Lisbona, oceano vicino; inverni umidi e piovosi.'],
+ ['Funchal','PT',0.15,950,47,1050,3800,16,25,2400,60,80,66,6,4,3.8,2,2,6,2,3,2,'Madeira: clima tra i più stabili d\'Europa, natura spettacolare, ritmo lento, isola piccola.'],
+ ['Parigi','FR',12.3,1450,75,2800,12000,5,25,1660,110,42,75,11,9,1.5,0,0,7,5,5,5,'Opportunità e cultura senza pari, ma appartamenti piccoli e cari e ritmi intensi.'],
+ ['Lione','FR',2.3,850,66,2300,6000,4,28,2000,95,45,77,12,8,1.0,0,1,6.5,3,4,3,'Alternativa a Parigi: gastronomia, buona qualità della vita, Alpi e Provenza raggiungibili.'],
+ ['Nizza','FR',1.0,1050,68,2100,6500,9,27,2700,60,52,74,10,7,0.8,2,2,8,3,4,3,'Costa Azzurra con mare e montagna a portata, a un passo dall\'Italia; costi alti, popolazione anziana.'],
+ ['Bordeaux','FR',1.0,850,64,2200,5000,7,27,2000,110,48,76,9,7,1.6,1,0,7,3,4,3,'Elegante e vivibile, vino e oceano a un\'ora; mercato del lavoro nella media.'],
+ ['Berlino','DE',4.6,1300,64,2800,7500,1,24,1650,105,52,70,11,9,1.8,0,0,9,5,5,5,'Creativa, internazionale e tollerante; inverni grigi, burocrazia tedesca e caccia alla casa difficile.'],
+ ['Monaco di Baviera','DE',2.9,1600,70,3300,11000,0,24,1750,125,75,77,9,9,1.0,0,2,4,5,4,3,'Ricca, sicura e con le Alpi vicinissime; la città più cara della Germania.'],
+ ['Amburgo','DE',3.0,1200,67,3000,8000,2,22,1550,130,59,74,9,9,1.8,1,0,7,4,4,4,'Porto, acqua e verde, economia solida; clima piovoso e ventoso.'],
+ ['Vienna','AT',2.9,1000,66,2600,9000,1,26,1880,90,72,79,11,10,1.4,0,1,10,4,5,4,'Ai vertici mondiali per qualità della vita, trasporti ed edilizia sociale; società un po\' formale.'],
+ ['Zurigo','CH',1.4,2600,115,6500,19000,1,24,1550,130,82,74,8,10,0.8,0,2,2,5,4,3,'Stipendi e servizi ai massimi livelli, natura stupenda; costi altissimi e si parla svizzero tedesco.'],
+ ['Lugano','CH',0.15,1600,100,5000,10000,3,28,2150,100,80,75,13,7,0.5,0,2,3,3,3,2,'Si vive in italiano con stipendi svizzeri, lago e montagne; piccola e tranquilla, costi svizzeri.',{lang:'Italiano',langEase:5,tax:24,english:3}],
+ ['Amsterdam','NL',2.5,2100,76,3300,9500,4,22,1650,130,72,76,9,9,1.8,1,0,4.5,5,5,5,'Inglese ovunque, bici, lavoro internazionale; crisi abitativa grave e clima grigio.'],
+ ['Rotterdam','NL',1.8,1450,70,2900,5500,4,22,1650,125,58,75,10,8,1.8,1,0,5.5,4,4,4,'Moderna e multiculturale, più accessibile di Amsterdam con opportunità simili.'],
+ ['Bruxelles','BE',2.1,1100,68,2700,4500,3,23,1550,135,45,74,10,7,1.6,1,0,12,4,4,4,'Capitale europea multilingue, ottima per carriere nelle istituzioni; tasse alte e quartieri disomogenei.'],
+ ['Lussemburgo','LU',0.13,1900,78,4500,12000,1,23,1650,130,67,72,8,8,1.3,0,0,6.5,4,3,2,'Stipendi tra i più alti d\'Europa, trasporti pubblici gratuiti; piccolo, caro e tranquillo.'],
+ ['Copenaghen','DK',2.1,1650,82,3900,8500,1,21,1700,110,74,78,7,9,2.2,2,0,6,4,4,4,'Bici, design ed equilibrio vita-lavoro; cara, inverni bui, danese difficile.'],
+ ['Stoccolma','SE',2.4,1400,68,3000,10000,-1,22,1800,105,53,68,5,9,2.7,2,0,8,5,4,4,'Bellissima sull\'acqua e molto innovativa; inverni lunghi e bui, mercato degli affitti bloccato.'],
+ ['Oslo','NO',1.1,1500,85,3900,10500,-3,22,1650,110,64,75,6,9,2.6,2,2,4.5,4,4,3,'Fiordo e piste da sci raggiungibili in metro, stipendi alti; tra le città più care d\'Europa.'],
+ ['Helsinki','FI',1.6,1100,70,2900,6500,-4,21,1850,110,76,75,5,9,3.0,2,0,10,4,4,3,'Sicura ed efficiente, scuola eccellente; inverni molto freddi e scuri.'],
+ ['Dublino','IE',2.1,2200,76,3500,7000,6,20,1450,130,52,52,7,5,2.6,2,1,4.5,5,4,4,'Sede europea delle big tech, si parla inglese; affitti tra i più alti d\'Europa e sanità pubblica in affanno.'],
+ ['Londra','UK',9.6,2700,80,3600,15000,6,24,1630,110,47,68,9,9,2.0,1,0,6,5,5,5,'Opportunità e cultura enormi, ma dopo la Brexit serve un visto e i costi sono altissimi.'],
+ ['Edimburgo','UK',0.55,1400,68,2800,5500,4,19,1400,135,68,70,6,7,2.5,2,1,4,4,4,4,'Splendida e a misura d\'uomo, festival e Highlands vicine; clima fresco, visto necessario.'],
+ ['Praga','CZ',2.2,900,52,1800,7000,0,25,1650,95,74,75,13,10,1.4,0,0,2.5,4,5,5,'Bellissima, sicura e centrale, trasporti eccellenti; centro molto turistico e ceco difficile.',{english:4}],
+ ['Varsavia','PL',3.1,900,48,1700,5500,-1,24,1600,100,72,66,15,9,2.0,0,0,2,4,4,4,'Economia in forte crescita, moderna e sicura; inverni freddi.',{english:4}],
+ ['Cracovia','PL',1.0,750,45,1500,4500,-1,25,1600,110,76,66,20,8,1.8,0,1,3,4,4,4,'Storica e universitaria, costi bassi e molti centri IT; aria pessima in inverno.'],
+ ['Budapest','HU',3.0,650,47,1150,4000,1,27,1990,85,66,54,14,9,1.5,0,0,4,3,5,5,'Vita culturale e terme a costi bassi; clima politico e diritti civili in peggioramento.'],
+ ['Lubiana','SI',0.55,850,55,1600,5500,0,27,1950,115,79,64,15,6,1.0,1,2,4,3,3,3,'Verde, piccola e sicura, a un\'ora da Trieste, Alpi e mare; offerta di lavoro limitata.'],
+ ['Zagabria','HR',1.1,650,50,1300,3500,1,27,1900,100,76,64,15,6,1.2,0,1,4.5,3,3,3,'Capitale tranquilla e sicura con costi contenuti; burocrazia lenta.'],
+ ['Spalato','HR',0.35,800,52,1150,5000,8,30,2700,75,74,61,10,4,1.2,2,1,7,2,3,3,'Mare e vita all\'aperto; turismo pieno d\'estate, città sonnolenta d\'inverno, poco lavoro qualificato.'],
+ ['Atene','GR',3.7,650,55,1000,3500,10,33,2800,50,55,55,14,6,2.3,2,1,9,3,5,5,'Sole, storia e mare a costi bassi, regime fiscale al 50%; stipendi locali bassi e burocrazia lenta.',{english:4}],
+ ['Salonicco','GR',1.1,500,50,850,2800,6,31,2400,60,62,57,18,6,2.0,2,1,11,2,4,4,'Vivace, studentesca e molto economica, ottimo cibo; poche opportunità di lavoro.'],
+ ['Limassol','CY',0.25,1500,62,1900,5000,12,33,3300,35,68,58,15,3,3.3,2,1,5,3,3,3,'Sole quasi tutto l\'anno e tasse basse, molte aziende internazionali; affitti alti e auto indispensabile.'],
+ ['La Valletta','MT',0.5,1200,62,1500,4500,13,31,3000,50,62,66,11,4,1.7,2,0,3,3,3,3,'Inglese lingua ufficiale, tasse vantaggiose e mare; isola densa, traffico e cantieri ovunque.'],
+ ['Tallinn','EE',0.6,750,55,1750,4000,-3,21,1800,115,76,73,5,8,3.0,2,0,7,4,3,3,'La capitale più digitale d\'Europa, startup e burocrazia online; inverni lunghi e freddi.'],
+ ['Riga','LV',0.85,550,50,1300,2500,-2,22,1750,115,62,58,10,7,2.7,2,0,6.5,3,3,3,'Art nouveau, costi bassi e buona qualità della vita; mercato del lavoro piccolo.'],
+ ['Vilnius','LT',0.75,750,50,1550,3500,-4,23,1700,115,70,70,9,7,2.5,0,0,6.5,3,3,3,'Barocca, verde e in crescita, buon ecosistema fintech; inverni rigidi.'],
+ ['Bucarest','RO',2.3,600,42,1200,2500,-1,30,2100,75,70,55,17,6,2.2,0,1,3,3,3,4,'Internet velocissimo, costi bassi e scena IT forte; traffico e servizi pubblici disomogenei.'],
+ ['Sofia','BG',1.5,600,42,1100,2500,-1,27,2150,90,63,55,17,7,1.9,0,2,3,3,3,3,'Tra le capitali più economiche dell\'UE, il monte Vitosha in città, flat tax al 10%.'],
+];
+
+const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+const BASE = RAW.map(r => {
+  const o = {}; F.forEach((k,i) => o[k] = r[i]);
+  const co = COUNTRIES[o.cc];
+  const c = { id: slug(o.name), name:o.name, cc:o.cc, country:co.n, lang:co.lang, langEase:co.le, english:co.en, tax:co.tax,
+    lgbt:co.lgbt, bureau:co.bur, status:co.st, euro:co.euro, net:co.net, regime:co.reg };
+  F.slice(2, 22).forEach(k => c[k] = o[k]);
+  c.note = o.note;
+  return Object.assign(c, o.ov || {});
+});
+
+/* ---------------- CRITERI ---------------- */
+const nf = new Intl.NumberFormat('it-IT');
+const eur = n => nf.format(Math.round(n)) + ' €';
+const dec = n => String(n).replace('.', ',');
+const of5 = n => dec(n) + '/5';
+const sgn = n => (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n);
+const SEA = ['oltre 1 ora','entro 1 ora','in città'];
+const MNT = ['lontana','entro 2 ore','entro 1 ora'];
+const popFmt = p => p < 1 ? nf.format(Math.round(p * 1000)) + ' mila ab.' : dec(p) + ' mln ab.';
+
+const CRIT = [
+ {k:'cost',g:'Soldi',l:'Costo della vita',s:'costi bassi',v:c=>c.cost,dir:-1,fmt:c=>eur(c.cost)+'/mese',w:4,d:'Affitto di un monolocale/bilocale in centro più le spese tipiche di una persona (spesa, bollette, trasporti, uscite).',src:'Stima: affitto + indice Numbeo × 15 €'},
+ {k:'buy',g:'Soldi',l:'Prezzo per comprare casa',s:'case accessibili',v:c=>c.buyM2,dir:-1,fmt:c=>nf.format(c.buyM2)+' €/m²',w:1,d:'Prezzo medio al metro quadro in zona centrale.',src:'Numbeo, portali immobiliari'},
+ {k:'ppp',g:'Soldi',l:'Potere d’acquisto locale',s:'potere d’acquisto',v:c=>c.ppp,dir:1,fmt:c=>Math.round(c.ppp*100)+'% dei costi',w:2,d:'Quanto lo stipendio netto medio locale copre il costo della vita stimato (100% = pareggio). Conta se cerchi lavoro sul posto.',src:'Calcolato da stipendi e costi'},
+ {k:'salary',g:'Soldi',l:'Stipendi locali',s:'stipendi alti',v:c=>c.salary,dir:1,fmt:c=>eur(c.salary)+' netti',w:1,d:'Stipendio netto medio mensile.',src:'Eurostat, Numbeo, istituti statistici'},
+ {k:'tax',g:'Soldi',l:'Tasse sul lavoro',s:'tasse basse',v:c=>c.tax,dir:-1,fmt:c=>dec(c.tax)+'% su 50k',w:2,d:'Imposte e contributi a carico del lavoratore su 50.000 € lordi, single, senza regimi agevolati.',src:'OCSE Taxing Wages, simulatori nazionali'},
+ {k:'jan',g:'Clima',l:'Inverni miti',il:'Inverni freddi',s:'inverno mite',is:'inverno vero',v:c=>c.janT,dir:1,inv:1,fmt:c=>sgn(c.janT)+' °C a gennaio',w:3,d:'Temperatura media di gennaio.',src:'Medie climatiche 1991–2020'},
+ {k:'jul',g:'Clima',l:'Estati non torride',il:'Estati calde',s:'estate fresca',is:'estate calda',v:c=>c.julT,dir:-1,inv:1,fmt:c=>c.julT+' °C max a luglio',w:1,d:'Temperatura massima media di luglio.',src:'Medie climatiche 1991–2020'},
+ {k:'sun',g:'Clima',l:'Ore di sole',s:'sole',v:c=>c.sun,dir:1,fmt:c=>nf.format(c.sun)+' h/anno',w:3,d:'Ore di sole in un anno.',src:'Medie climatiche'},
+ {k:'rain',g:'Clima',l:'Poca pioggia',s:'poca pioggia',v:c=>c.rain,dir:-1,fmt:c=>c.rain+' gg di pioggia',w:1,d:'Giorni all\'anno con almeno 1 mm di pioggia.',src:'Medie climatiche'},
+ {k:'safety',g:'Sicurezza e salute',l:'Sicurezza',s:'sicurezza',v:c=>c.safety,dir:1,fmt:c=>c.safety+'/100',w:4,d:'Percezione di sicurezza (furti, aggressioni, girare di notte).',src:'Numbeo Safety Index'},
+ {k:'health',g:'Sicurezza e salute',l:'Sanità',s:'sanità',v:c=>c.health,dir:1,fmt:c=>c.health+'/100',w:3,d:'Qualità percepita del sistema sanitario: competenza, tempi di attesa, strutture.',src:'Numbeo Health Care Index'},
+ {k:'air',g:'Sicurezza e salute',l:'Aria pulita',s:'aria pulita',v:c=>c.pm25,dir:-1,fmt:c=>c.pm25+' µg/m³',w:2,d:'Media annua di polveri sottili PM2.5 (l\'OMS raccomanda 5).',src:'IQAir World Air Quality Report'},
+ {k:'jobs',g:'Lavoro',l:'Opportunità di lavoro',s:'lavoro',v:c=>c.jobs,dir:1,fmt:c=>of5(c.jobs),w:2,d:'Dimensione e internazionalità del mercato del lavoro qualificato (tech, finanza, aziende estere).',src:'Valutazione editoriale'},
+ {k:'unemp',g:'Lavoro',l:'Disoccupazione bassa',s:'bassa disoccupazione',v:c=>c.unemp,dir:-1,fmt:c=>dec(c.unemp)+'% disocc.',w:1,d:'Tasso di disoccupazione della regione.',src:'Eurostat (regioni NUTS 2)'},
+ {k:'transit',g:'Vita quotidiana',l:'Trasporti pubblici',s:'trasporti',v:c=>c.transit,dir:1,fmt:c=>c.transit+'/10',w:3,d:'Si vive bene senza auto? Copertura, frequenza e affidabilità di metro, tram, bus.',src:'Valutazione editoriale'},
+ {k:'net',g:'Vita quotidiana',l:'Internet veloce',s:'internet',v:c=>c.net,dir:1,fmt:c=>c.net+' Mbps',w:1,d:'Velocità mediana della banda larga fissa nel paese.',src:'Ookla Speedtest Global Index'},
+ {k:'bureau',g:'Vita quotidiana',l:'Burocrazia efficiente',s:'burocrazia snella',v:c=>c.bureau,dir:1,fmt:c=>of5(c.bureau),w:2,d:'Quanto è facile registrarsi, aprire una partita IVA, avere documenti: digitalizzazione e tempi della pubblica amministrazione.',src:'EU eGovernment Benchmark, DESI'},
+ {k:'english',g:'Vita quotidiana',l:'Inglese diffuso',s:'inglese',v:c=>c.english,dir:1,fmt:c=>of5(c.english),w:2,d:'Quanto riesci a vivere in inglese prima di imparare la lingua locale.',src:'EF English Proficiency Index'},
+ {k:'lang',g:'Vita quotidiana',l:'Lingua facile per un italiano',s:'lingua facile',v:c=>c.langEase,dir:1,fmt:c=>c.lang+' · '+of5(c.langEase),w:2,d:'Quanto è vicina all\'italiano la lingua locale (lingue romanze facili, ugro-finniche difficilissime).',src:'Valutazione linguistica'},
+ {k:'flight',g:'Vita quotidiana',l:'Vicinanza all’Italia',s:'vicina a casa',v:c=>c.flight,dir:-1,fmt:c=>c.flight===0?'in Italia':dec(c.flight)+' h da Milano',w:2,d:'Ore di volo diretto (o di treno se più comodo) da Milano.',src:'Orari voli tipici'},
+ {k:'sea',g:'Stile di vita',l:'Mare vicino',s:'mare',v:c=>c.sea,dir:1,fmt:c=>'mare '+SEA[c.sea],w:2,d:'0 = oltre un\'ora, 1 = entro un\'ora, 2 = in città.',src:'Geografia'},
+ {k:'mount',g:'Stile di vita',l:'Montagna vicina',s:'montagna',v:c=>c.mount,dir:1,fmt:c=>'montagna '+MNT[c.mount],w:1,d:'0 = lontana, 1 = entro due ore, 2 = entro un\'ora.',src:'Geografia'},
+ {k:'culture',g:'Stile di vita',l:'Cultura e cibo',s:'cultura',v:c=>c.culture,dir:1,fmt:c=>of5(c.culture),w:2,d:'Musei, teatri, eventi, cucina, patrimonio storico.',src:'Valutazione editoriale'},
+ {k:'night',g:'Stile di vita',l:'Vita sociale e notturna',s:'vita sociale',v:c=>c.night,dir:1,fmt:c=>of5(c.night),w:2,d:'Facilità di conoscere gente, locali, comunità internazionale.',src:'Valutazione editoriale'},
+ {k:'lgbt',g:'Stile di vita',l:'Diritti civili e inclusività',s:'diritti civili',v:c=>c.lgbt,dir:1,fmt:c=>c.lgbt+'% ILGA',w:1,d:'Tutela legale delle persone LGBTQ+, buon indicatore generale di apertura del paese.',src:'ILGA-Europe Rainbow Map'},
+ {k:'size',g:'Stile di vita',l:'Città grande',il:'Città piccola',s:'grande città',is:'città piccola',v:c=>c.pop,dir:1,inv:1,log:1,fmt:c=>popFmt(c.pop),w:0,d:'Popolazione dell\'area urbana (scala logaritmica).',src:'Eurostat, istituti statistici'},
+];
+const GROUPS = [...new Set(CRIT.map(c => c.g))];
+const CK = Object.fromEntries(CRIT.map(c => [c.k, c]));
+
+const EDIT = [
+ ['rent','Affitto 1 locale centro','€'],['costIdx','Indice spese (NY=100)',''],['salary','Stipendio netto medio','€'],['tax','Tasse su 50k lordi','%'],
+ ['buyM2','Prezzo acquisto centro','€/m²'],['janT','Media gennaio','°C'],['julT','Max luglio','°C'],['sun','Ore di sole','h'],['rain','Giorni di pioggia','gg'],
+ ['safety','Sicurezza','/100'],['health','Sanità','/100'],['pm25','PM2.5','µg/m³'],['jobs','Lavoro','/5'],['unemp','Disoccupazione','%'],
+ ['transit','Trasporti','/10'],['net','Internet','Mbps'],['bureau','Burocrazia','/5'],['english','Inglese','/5'],['langEase','Lingua per italiani','/5'],
+ ['flight','Ore da Milano','h'],['sea','Mare (0–2)',''],['mount','Montagna (0–2)',''],['culture','Cultura','/5'],['night','Vita sociale','/5'],['lgbt','Diritti civili','%'],['pop','Popolazione','mln'],
+];
+
+const DEFAULT_W = Object.fromEntries(CRIT.map(c => [c.k, c.w]));
+const zeroW = o => Object.assign(Object.fromEntries(CRIT.map(c => [c.k, 0])), o);
+const PRESETS = [
+ {n:'Equilibrato', w:DEFAULT_W, inv:{}},
+ {n:'Lavoro da remoto', w:zeroW({cost:5,tax:3,net:5,sun:4,jan:4,english:4,night:3,culture:3,safety:3,health:2,transit:2,flight:2,air:2,sea:2}), inv:{}},
+ {n:'Carriera', w:zeroW({jobs:5,ppp:5,salary:4,english:4,unemp:3,transit:3,tax:2,safety:2,health:2,culture:2,night:2,bureau:2}), inv:{}},
+ {n:'Famiglia', w:zeroW({safety:5,health:5,air:4,buy:4,transit:3,bureau:3,cost:3,jobs:3,unemp:2,culture:2,lang:2,flight:2,size:2}), inv:{size:true}},
+ {n:'Sole e mare', w:zeroW({sun:5,jan:5,sea:5,rain:3,cost:3,safety:2,health:2,night:2}), inv:{}},
+ {n:'Vicino a casa', w:zeroW({flight:5,lang:5,cost:3,safety:3,health:3,culture:2,transit:2,jobs:2}), inv:{}},
+];
+
+/* ---------------- STATO ---------------- */
+const KEY = 'dove-vivere-v1';
+const DEFAULT_STATE = () => ({
+  weights: {...DEFAULT_W}, inv: {}, preset: 'Equilibrato',
+  f: {q:'', rentMax:3000, janMin:-5, safetyMin:0, noVisa:false, euro:false, noIT:false, sea:false, mount:false, budget:false, fav:false},
+  budget: '', fav: {}, notes: {}, compare: [], overrides: {}, sort: 'score',
+});
+let state = DEFAULT_STATE();
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = merge(DEFAULT_STATE(), s); } catch (e) {}
+function merge(base, s) {
+  const out = {...base, ...s};
+  out.f = {...base.f, ...(s.f || {})};
+  out.weights = {...base.weights, ...(s.weights || {})};
+  out.compare = (s.compare || []).filter(id => BASE.some(c => c.id === id));
+  return out;
+}
+let saveT;
+function save() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }, 200); }
+
+/* ---------------- CALCOLO ---------------- */
+let cities = [];
+function compute() {
+  cities = BASE.map(c => {
+    const x = {...c, ...(state.overrides[c.id] || {})};
+    x.cost = Math.round(x.rent + x.costIdx * 15);
+    x.ppp = x.salary / x.cost;
+    return x;
+  });
+  const tv = (cr, c) => cr.log ? Math.log(cr.v(c)) : cr.v(c);
+  CRIT.forEach(cr => { const vs = cities.map(c => tv(cr, c)); cr.min = Math.min(...vs); cr.max = Math.max(...vs); });
+  cities.forEach(c => {
+    c.norm = {}; let sw = 0, s = 0;
+    CRIT.forEach(cr => {
+      let n = (tv(cr, c) - cr.min) / ((cr.max - cr.min) || 1);
+      const dir = cr.dir * (state.inv[cr.k] ? -1 : 1);
+      if (dir < 0) n = 1 - n;
+      c.norm[cr.k] = n;
+      const w = state.weights[cr.k] || 0;
+      if (w > 0) { sw += w; s += w * n; }
+    });
+    c.score = sw ? Math.round(s / sw * 100) : 0;
+    c.rk = {};
+  });
+  CRIT.forEach(cr => {
+    const sorted = [...cities].sort((a, b) => b.norm[cr.k] - a.norm[cr.k]);
+    sorted.forEach((c, i) => { c.rk[cr.k] = i > 0 && sorted[i-1].norm[cr.k] === c.norm[cr.k] ? sorted[i-1].rk[cr.k] : i + 1; });
+  });
+  const byScore = [...cities].sort((a, b) => b.score - a.score);
+  byScore.forEach((c, i) => c.overall = i + 1);
+}
+const budgetVal = () => Number(state.budget) || 0;
+function passes(c) {
+  const f = state.f, q = f.q.trim().toLowerCase();
+  if (q && !(c.name.toLowerCase().includes(q) || c.country.toLowerCase().includes(q))) return false;
+  if (c.rent > f.rentMax) return false;
+  if (c.janT < f.janMin) return false;
+  if (c.safety < f.safetyMin) return false;
+  if (f.noVisa && c.status === 'UK') return false;
+  if (f.euro && !c.euro) return false;
+  if (f.noIT && c.cc === 'IT') return false;
+  if (f.sea && c.sea < 1) return false;
+  if (f.mount && c.mount < 1) return false;
+  if (f.budget && budgetVal() && budgetVal() < c.cost) return false;
+  if (f.fav && !state.fav[c.id]) return false;
+  return true;
+}
+const label = cr => state.inv[cr.k] ? cr.il : cr.l;
+const short = cr => state.inv[cr.k] ? cr.is : cr.s;
+function why(c) {
+  const act = CRIT.filter(cr => (state.weights[cr.k] || 0) > 0);
+  const plus = act.filter(cr => c.norm[cr.k] >= 0.72).sort((a, b) => (state.weights[b.k] * c.norm[b.k]) - (state.weights[a.k] * c.norm[a.k])).slice(0, 3);
+  const minus = act.filter(cr => state.weights[cr.k] >= 2 && c.norm[cr.k] <= 0.3).sort((a, b) => (state.weights[b.k] * (1 - c.norm[b.k])) - (state.weights[a.k] * (1 - c.norm[a.k]))).slice(0, 2);
+  return {plus, minus};
+}
+
+/* ---------------- RENDER ---------------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const plate = c => `<span class="plate" aria-label="${esc(c.country)}">${['CH','NO','UK'].includes(c.cc) ? '' : '<b>EU</b>'}<i>${c.cc}</i></span>`;
+
+function renderPresets() {
+  $('#presets').innerHTML = PRESETS.map(p => `<button class="chip-btn" data-preset="${esc(p.n)}" aria-pressed="${state.preset === p.n}">${esc(p.n)}</button>`).join('');
+}
+function renderWeights() {
+  const openGroups = new Set([...document.querySelectorAll('details.group[open]')].map(d => d.dataset.g));
+  const first = !document.querySelector('details.group');
+  $('#weights').innerHTML = GROUPS.map(g => {
+    const cs = CRIT.filter(c => c.g === g);
+    const active = cs.filter(c => state.weights[c.k] > 0).length;
+    const open = first ? (g === 'Soldi' || g === 'Clima') : openGroups.has(g);
+    return `<details class="group" data-g="${esc(g)}" ${open ? 'open' : ''}><summary>${esc(g)}<small>${active}/${cs.length}</small></summary><div class="wlist">` +
+      cs.map(cr => {
+        const w = state.weights[cr.k] || 0;
+        const pips = [0,1,2,3,4,5].map(i => i === 0
+          ? `<button class="pip zero" data-w="${cr.k}:0" aria-label="${esc(label(cr))}: non conta" title="Non conta">0</button>`
+          : `<button class="pip ${i <= w ? 'on' : ''}" data-w="${cr.k}:${i}" aria-label="${esc(label(cr))}: peso ${i}" aria-pressed="${i === w}"></button>`).join('');
+        const inv = cr.inv ? `<button class="inv" data-inv="${cr.k}">preferisco: ${esc(state.inv[cr.k] ? cr.l : cr.il).toLowerCase()} ⇄</button>` : '';
+        return `<div class="wrow"><span class="wl ${w ? '' : 'off'}" title="${esc(cr.d)}">${esc(label(cr))}</span><span class="pips">${pips}</span>${inv}</div>`;
+      }).join('') + `</div></details>`;
+  }).join('');
+}
+function syncFilters() {
+  const f = state.f;
+  $('#q').value = f.q; $('#budget').value = state.budget;
+  $('#rentMax').value = f.rentMax; $('#rentMaxOut').textContent = f.rentMax >= 3000 ? 'nessun limite' : eur(f.rentMax);
+  $('#janMin').value = f.janMin; $('#janMinOut').textContent = f.janMin <= -5 ? 'qualsiasi' : sgn(f.janMin) + ' °C';
+  $('#safetyMin').value = f.safetyMin; $('#safetyMinOut').textContent = f.safetyMin ? f.safetyMin + '/100' : 'qualsiasi';
+  [['fNoVisa','noVisa'],['fEuro','euro'],['fNoIT','noIT'],['fSea','sea'],['fMount','mount'],['fBudget','budget'],['fFav','fav']].forEach(([id, k]) => $('#' + id).checked = f[k]);
+}
+
+function factChips(c) {
+  const b = budgetVal();
+  const left = b ? b - c.cost : null;
+  const chips = [
+    `<span class="fact">${eur(c.cost)}/mese</span>`,
+    `<span class="fact">${sgn(c.janT)}° gen</span>`,
+    `<span class="fact">${nf.format(c.sun)} h sole</span>`,
+    `<span class="fact">sicur. ${c.safety}</span>`,
+  ];
+  if (left !== null) chips.push(`<span class="fact ${left >= 0 ? 'good' : 'bad'}">${left >= 0 ? 'ti restano ' : 'mancano '}${eur(Math.abs(left))}</span>`);
+  if (c.status === 'UK') chips.push(`<span class="fact bad">serve visto</span>`);
+  const w = why(c);
+  const whyTxt = [w.plus.length ? `<span class="p">+ ${w.plus.map(short).join(', ')}</span>` : '', w.minus.length ? `<span class="m">− ${w.minus.map(short).join(', ')}</span>` : ''].filter(Boolean).join(' · ');
+  return chips.join('') + (whyTxt ? `<div class="why">${whyTxt}</div>` : '');
+}
+
+function renderRanking() {
+  const list = cities.filter(passes);
+  const sorters = {
+    score: (a, b) => b.score - a.score,
+    cost: (a, b) => a.cost - b.cost,
+    name: (a, b) => a.name.localeCompare(b.name, 'it'),
+    left: (a, b) => b.ppp - a.ppp,
+  };
+  list.sort(sorters[state.sort] || sorters.score);
+  const activeW = CRIT.filter(c => state.weights[c.k] > 0).length;
+  const head = `<div class="view-head"><div><h2>Le città giuste per te</h2><p><span class="num">${list.length}</span> città su ${cities.length} superano i tuoi paletti. Il punteggio pesa ${activeW} criteri in base a quanto contano per te: cambia i pesi nel pannello dei criteri e la classifica si aggiorna.</p></div>
+    <label class="sort">Ordina per <select id="sort"><option value="score">Punteggio</option><option value="cost">Costo della vita</option><option value="left">Potere d'acquisto</option><option value="name">Nome</option></select></label></div>`;
+  if (!list.length) {
+    $('#view-classifica').innerHTML = head + `<div class="empty"><p>Nessuna città supera tutti i paletti.</p><button class="btn" id="clearFilters">Togli i paletti</button></div>`;
+  } else {
+    $('#view-classifica').innerHTML = head + `<ol class="rank">` + list.map((c, i) => `
+      <li class="row ${state.sort === 'score' && i < 3 ? 'top3' : ''}" data-open="${c.id}" tabindex="0">
+        <span class="pos">${i + 1}</span>
+        ${plate(c)}
+        <div class="who"><strong>${esc(c.name)}</strong><small>${esc(c.country)} · ${esc(c.lang)}</small></div>
+        <div class="facts">${factChips(c)}</div>
+        <div class="score"><b>${c.score}<small>/100</small></b><div class="bar"><span style="width:${c.score}%"></span></div></div>
+        <div class="acts">
+          <button class="icon-btn ${state.fav[c.id] ? 'fav-on' : ''}" data-fav="${c.id}" aria-pressed="${!!state.fav[c.id]}" aria-label="Preferita" title="Preferita">★</button>
+          <button class="icon-btn ${state.compare.includes(c.id) ? 'cmp-on' : ''}" data-cmp="${c.id}" aria-pressed="${state.compare.includes(c.id)}" aria-label="Aggiungi al confronto" title="Confronta">⇄</button>
+        </div>
+      </li>`).join('') + `</ol>`;
+  }
+  $('#sort').value = state.sort;
+  $('#panelSummary').textContent = `${activeW} pesi · ${list.length} città`;
+}
+
+function renderCompare() {
+  const sel = state.compare.map(id => cities.find(c => c.id === id)).filter(Boolean);
+  const opts = cities.filter(c => !state.compare.includes(c.id)).sort((a, b) => a.name.localeCompare(b.name, 'it'))
+    .map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.country)})</option>`).join('');
+  let html = `<div class="view-head"><div><h2>Confronto</h2><p>Fino a 4 città affiancate, criterio per criterio. Il triangolo verde segna la migliore in ogni riga.</p></div></div>
+    <div class="cmp-pick">${sel.map(c => `<span class="tag">${esc(c.name)}<button data-cmp="${c.id}" aria-label="Togli ${esc(c.name)}">×</button></span>`).join('')}
+    ${sel.length < 4 ? `<select id="cmpAdd" aria-label="Aggiungi città"><option value="">+ Aggiungi una città…</option>${opts}</select>` : ''}</div>`;
+  if (sel.length < 2) {
+    html += `<div class="empty">Scegli almeno due città qui sopra, oppure usa il pulsante ⇄ nella classifica.</div>`;
+  } else {
+    const best = (cr) => Math.max(...sel.map(c => c.norm[cr.k]));
+    html += `<div class="tablewrap"><table class="cmp"><thead><tr><th></th>${sel.map(c => `<th>${esc(c.name)}<div style="font-family:var(--f-body);font-size:12px;font-weight:400;color:var(--muted)">${esc(c.country)}</div></th>`).join('')}</tr></thead><tbody>
+      <tr><th class="crit">Punteggio per te</th>${sel.map(c => { const top = Math.max(...sel.map(x => x.score)); return `<td class="v ${c.score === top ? 'best' : ''}" style="font-size:16px">${c.score}/100</td>`; }).join('')}</tr>
+      <tr><th class="crit">Posizione</th>${sel.map(c => `<td class="v">#${c.overall} di ${cities.length}</td>`).join('')}</tr>`;
+    if (budgetVal()) html += `<tr><th class="crit">Col tuo reddito ti restano</th>${sel.map(c => { const l = budgetVal() - c.cost; return `<td class="v" style="color:var(${l >= 0 ? '--good' : '--bad'})">${l >= 0 ? '' : '−'}${eur(Math.abs(l))}</td>`; }).join('')}</tr>`;
+    GROUPS.forEach(g => {
+      html += `<tr class="grp"><th colspan="${sel.length + 1}">${esc(g)}</th></tr>`;
+      CRIT.filter(cr => cr.g === g).forEach(cr => {
+        const b = best(cr), w = state.weights[cr.k] || 0;
+        html += `<tr><th class="crit" style="${w ? '' : 'color:var(--muted)'}">${esc(label(cr))}${w ? ` <span class="num" style="color:var(--muted);font-size:11px">×${w}</span>` : ''}</th>${sel.map(c => `<td class="v ${c.norm[cr.k] === b && sel.some(x => x.norm[cr.k] !== b) ? 'best' : ''}">${esc(cr.fmt(c))}</td>`).join('')}</tr>`;
+      });
+    });
+    html += `<tr class="grp"><th colspan="${sel.length + 1}">Fisco per chi si trasferisce</th></tr><tr><th class="crit">Regimi agevolati</th>${sel.map(c => `<td style="font-size:12.5px;min-width:200px">${esc(c.regime)}</td>`).join('')}</tr>`;
+    html += `</tbody></table></div>`;
+  }
+  $('#view-confronta').innerHTML = html;
+  const n = state.compare.length;
+  $('#cmpCount').hidden = !n; $('#cmpCount').textContent = n;
+}
+
+function renderMethod() {
+  $('#view-metodo').innerHTML = `<div class="view-head"><div><h2>Dati e metodo</h2><p>Come funziona il punteggio, da dove vengono i numeri e come salvare le tue impostazioni.</p></div></div>
+  <div class="prose">
+    <div class="warn"><strong>I dati sono stime indicative.</strong> Li ho compilati arrotondando valori 2024–2025 dalle fonti qui sotto, ma non sono scaricati in tempo reale. Servono a restringere la rosa: prima di decidere, verifica affitti, tasse e burocrazia sulle fonti ufficiali. Se trovi un numero sbagliato o più aggiornato, correggilo dalla scheda della città con "Correggi i dati".</div>
+    <h3>Come si calcola il punteggio</h3>
+    <p>Per ogni criterio le 51 città vengono messe su una scala da 0 (la peggiore) a 1 (la migliore). Il punteggio finale è la media di questi valori, pesata con i pesi da 0 a 5 che scegli tu, espressa su 100. Un criterio con peso 0 non conta. Per alcuni criteri puoi invertire la preferenza (per esempio inverni freddi se scii, o città piccola invece di grande).</p>
+    <p>I paletti invece non pesano: escludono e basta. Usali per le cose su cui non scendi a compromessi, e usa i pesi per tutto il resto.</p>
+    <p>Il costo della vita è una stima per una persona sola: affitto di un monolocale o bilocale in centro più l'indice spese di Numbeo moltiplicato per 15 €. Se indichi il tuo reddito netto (per esempio se lavori da remoto) vedi quanto ti resta ogni mese in ogni città.</p>
+    <h3>Criteri e fonti</h3>
+    <div class="tablewrap"><table class="src"><thead><tr><th>Criterio</th><th>Cosa misura</th><th>Fonte</th></tr></thead><tbody>
+      ${CRIT.map(cr => `<tr><td><strong>${esc(cr.l)}</strong><br><span style="color:var(--muted)">${esc(cr.g)}</span></td><td>${esc(cr.d)}</td><td>${esc(cr.src)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <h3>Cosa non c'è (ancora)</h3>
+    <p>Alcune cose sono troppo personali o troppo variabili per una tabella: costo e qualità delle scuole internazionali, tempi per il riconoscimento del titolo di studio, rischi climatici futuri (siccità, ondate di calore), presenza di amici o comunità italiane. Annotale nella scheda di ogni città, nel campo "I tuoi appunti".</p>
+    <h3>Salva e sposta le tue impostazioni</h3>
+    <p>Pesi, paletti, preferite, appunti e correzioni restano salvati in questo browser. Per portarli su un altro dispositivo, copia il codice qui sotto e incollalo dall'altra parte.</p>
+    <div class="io">
+      <textarea id="ioText" aria-label="Impostazioni in formato JSON" spellcheck="false"></textarea>
+      <div class="row-btns">
+        <button class="btn" id="ioExport">Genera codice</button>
+        <button class="btn" id="ioCopy">Copia</button>
+        <button class="btn primary" id="ioImport">Carica dal codice</button>
+        <button class="btn danger" id="ioReset">Ripristina tutto</button>
+        <span class="msg" id="ioMsg" role="status"></span>
+      </div>
+    </div>
+  </div>`;
+}
+
+let openId = null, editing = false;
+function renderDrawer() {
+  const c = cities.find(x => x.id === openId);
+  if (!c) { closeDrawer(); return; }
+  const d = $('#drawer');
+  const b = budgetVal();
+  const ov = state.overrides[c.id] || {};
+  const tiles = [
+    ['Costo stimato', eur(c.cost) + '/mese'], ['Affitto centro', eur(c.rent)], ['Stipendio medio', eur(c.salary)],
+    b ? ['Col tuo reddito', (b - c.cost >= 0 ? '+' : '−') + eur(Math.abs(b - c.cost))] : ['Potere d’acquisto', Math.round(c.ppp * 100) + '%'],
+    ['Posizione', '#' + c.overall + ' di ' + cities.length], ['Per i cittadini UE', c.status === 'UK' ? 'serve visto' : c.status === 'CH' ? 'permesso B' : 'libera circolazione'],
+  ];
+  let body = `<div class="d-head"><div><h2 id="dTitle">${plate(c)} ${esc(c.name)}</h2><p>${esc(c.country)} · ${esc(c.lang)} · ${popFmt(c.pop)}${c.euro ? ' · euro' : ''}</p></div>
+      <div style="display:flex;gap:10px;align-items:center"><div class="d-score"><b>${c.score}</b><span style="color:var(--muted)">/100</span></div><button class="icon-btn" id="dClose" aria-label="Chiudi">×</button></div></div>
+    <div class="d-actions">
+      <button class="btn ${state.fav[c.id] ? 'primary' : ''}" data-fav="${c.id}">${state.fav[c.id] ? '★ Preferita' : '☆ Aggiungi alle preferite'}</button>
+      <button class="btn ${state.compare.includes(c.id) ? 'primary' : ''}" data-cmp="${c.id}">${state.compare.includes(c.id) ? '⇄ Nel confronto' : '⇄ Confronta'}</button>
+      <button class="btn" id="dEdit">${editing ? 'Fine correzioni' : 'Correggi i dati'}</button>
+      ${Object.keys(ov).length ? `<button class="btn danger" id="dResetOv">Ripristina dati originali</button>` : ''}
+    </div>
+    <div class="note">${esc(c.note)}</div>
+    <div class="tiles">${tiles.map(([k, v]) => `<div class="tile"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div>`;
+  if (editing) {
+    body += `<div class="mgroup"><h3>Correggi i dati</h3><p style="margin:0 0 8px;color:var(--muted);font-size:13px">Le modifiche restano solo nel tuo browser e ricalcolano subito la classifica. I campi evidenziati sono quelli che hai cambiato.</p>` +
+      EDIT.map(([k, l, u]) => `<div class="mrow" style="grid-template-columns:minmax(0,1fr) 120px 50px"><label class="ml" for="ed-${k}" style="${k in ov ? 'color:var(--accent);font-weight:600' : ''}">${esc(l)}</label><input type="number" step="any" id="ed-${k}" data-ed="${k}" value="${c[k]}"><span class="mr">${esc(u)}</span></div>`).join('') + `</div>`;
+  } else {
+    GROUPS.forEach(g => {
+      body += `<div class="mgroup"><h3>${esc(g)}</h3>` + CRIT.filter(cr => cr.g === g).map(cr => {
+        const w = state.weights[cr.k] || 0;
+        return `<div class="mrow ${w ? '' : 'w0'}"><span class="ml" title="${esc(cr.d)}">${esc(label(cr))}</span><span class="mv">${esc(cr.fmt(c))}</span><div class="bar" title="Posizione relativa"><span style="width:${Math.max(3, c.norm[cr.k] * 100)}%"></span></div><span class="mr">#${c.rk[cr.k]}</span></div>`;
+      }).join('') + `</div>`;
+    });
+  }
+  body += `<div class="tax-box"><strong>Fisco per chi si trasferisce</strong><span>${esc(c.regime)}</span><span style="color:var(--muted);font-size:12.5px">Prelievo standard su 50.000 € lordi: circa ${dec(c.tax)}%. I regimi cambiano spesso: verifica requisiti e scadenze con un commercialista.</span></div>
+    <div class="field"><label for="dNotes">I tuoi appunti</label><textarea id="dNotes" rows="4" placeholder="Es. amici in città, costo asilo, visita prevista a marzo…">${esc(state.notes[c.id] || '')}</textarea></div>`;
+  d.innerHTML = body;
+}
+function openDrawer(id) { openId = id; editing = false; renderDrawer(); $('#drawer').hidden = false; $('#scrim').hidden = false; $('#dClose').focus(); }
+function closeDrawer() { openId = null; $('#drawer').hidden = true; $('#scrim').hidden = true; }
+
+function render() {
+  compute();
+  renderRanking();
+  renderCompare();
+  if (openId) renderDrawer();
+  save();
+}
+
+/* ---------------- VISTE ---------------- */
+const VIEWS = ['classifica', 'confronta', 'metodo'];
+function route() {
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'classifica';
+  document.querySelectorAll('[data-viewpane]').forEach(el => el.hidden = el.dataset.viewpane !== v);
+  document.querySelectorAll('nav.tabs a').forEach(a => { if (a.dataset.view === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+}
+window.addEventListener('hashchange', route);
+
+/* ---------------- EVENTI ---------------- */
+function toggleFav(id) { if (state.fav[id]) delete state.fav[id]; else state.fav[id] = true; }
+function toggleCmp(id) {
+  const i = state.compare.indexOf(id);
+  if (i >= 0) state.compare.splice(i, 1);
+  else { if (state.compare.length >= 4) state.compare.shift(); state.compare.push(id); }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('button, [data-open]');
+  if (!t) return;
+  if (t.dataset.preset) {
+    const p = PRESETS.find(x => x.n === t.dataset.preset);
+    state.weights = {...p.w}; state.inv = {...p.inv}; state.preset = p.n;
+    renderPresets(); renderWeights(); render(); return;
+  }
+  if (t.dataset.w) {
+    const [k, v] = t.dataset.w.split(':');
+    state.weights[k] = Number(v); state.preset = '';
+    renderPresets(); renderWeights(); render(); return;
+  }
+  if (t.dataset.inv) {
+    const k = t.dataset.inv; state.inv[k] = !state.inv[k]; state.preset = '';
+    if (!state.weights[k]) state.weights[k] = 2;
+    renderPresets(); renderWeights(); render(); return;
+  }
+  if (t.dataset.fav) { e.stopPropagation(); toggleFav(t.dataset.fav); render(); return; }
+  if (t.dataset.cmp) { e.stopPropagation(); toggleCmp(t.dataset.cmp); render(); return; }
+  if (t.id === 'clearFilters') { state.f = DEFAULT_STATE().f; syncFilters(); render(); return; }
+  if (t.id === 'dClose') { closeDrawer(); return; }
+  if (t.id === 'dEdit') { editing = !editing; renderDrawer(); return; }
+  if (t.id === 'dResetOv') { delete state.overrides[openId]; render(); return; }
+  if (t.id === 'ioExport') { $('#ioText').value = JSON.stringify(state, null, 1); flash('Codice generato.'); return; }
+  if (t.id === 'ioCopy') {
+    const txt = $('#ioText');
+    if (!txt.value) txt.value = JSON.stringify(state, null, 1);
+    const ok = () => flash('Copiato negli appunti.');
+    const fb = () => { txt.focus(); txt.select(); flash('Testo selezionato: copialo con Ctrl/Cmd+C.'); };
+    try { navigator.clipboard.writeText(txt.value).then(ok, fb); } catch (err) { fb(); }
+    return;
+  }
+  if (t.id === 'ioImport') {
+    try {
+      const s = JSON.parse($('#ioText').value);
+      if (!s || typeof s !== 'object' || !s.weights) throw new Error();
+      state = merge(DEFAULT_STATE(), s); renderPresets(); renderWeights(); syncFilters(); render(); flash('Impostazioni caricate.');
+    } catch (err) { flash('Il codice non è valido: incolla il testo generato con "Genera codice".', true); }
+    return;
+  }
+  if (t.id === 'ioReset') {
+    if (t.dataset.armed) {
+      state = DEFAULT_STATE(); renderPresets(); renderWeights(); syncFilters(); render(); flash('Tutto ripristinato.');
+      delete t.dataset.armed; t.textContent = 'Ripristina tutto';
+    } else {
+      t.dataset.armed = '1'; t.textContent = 'Conferma: cancella tutto';
+      setTimeout(() => { delete t.dataset.armed; t.textContent = 'Ripristina tutto'; }, 4000);
+    }
+    return;
+  }
+  if (t.id === 'panelToggle') { const p = $('#panel'); p.classList.toggle('open'); t.setAttribute('aria-expanded', p.classList.contains('open')); return; }
+  if (t.dataset.open) { openDrawer(t.dataset.open); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && openId) closeDrawer();
+  if (e.key === 'Enter' && e.target.dataset && e.target.dataset.open) openDrawer(e.target.dataset.open);
+});
+$('#scrim').addEventListener('click', closeDrawer);
+function flash(msg, bad) { const m = $('#ioMsg'); if (!m) return; m.textContent = msg; m.style.color = bad ? 'var(--bad)' : 'var(--good)'; }
+
+document.addEventListener('input', e => {
+  const t = e.target, f = state.f;
+  if (t.id === 'q') f.q = t.value;
+  else if (t.id === 'budget') state.budget = t.value;
+  else if (t.id === 'rentMax') f.rentMax = Number(t.value);
+  else if (t.id === 'janMin') f.janMin = Number(t.value);
+  else if (t.id === 'safetyMin') f.safetyMin = Number(t.value);
+  else if (t.id === 'dNotes') { if (t.value.trim()) state.notes[openId] = t.value; else delete state.notes[openId]; save(); return; }
+  else return;
+  syncFilters(); render();
+});
+document.addEventListener('change', e => {
+  const t = e.target, map = {fNoVisa:'noVisa', fEuro:'euro', fNoIT:'noIT', fSea:'sea', fMount:'mount', fBudget:'budget', fFav:'fav'};
+  if (map[t.id]) { state.f[map[t.id]] = t.checked; render(); }
+  else if (t.id === 'sort') { state.sort = t.value; render(); }
+  else if (t.id === 'cmpAdd' && t.value) { toggleCmp(t.value); render(); }
+  else if (t.dataset.ed) {
+    const k = t.dataset.ed, v = Number(t.value), base = BASE.find(c => c.id === openId);
+    if (t.value === '' || !isFinite(v)) return;
+    const o = state.overrides[openId] = state.overrides[openId] || {};
+    if (v === base[k]) delete o[k]; else o[k] = v;
+    if (!Object.keys(o).length) delete state.overrides[openId];
+    render();
+    const el = document.getElementById('ed-' + k); if (el) el.focus();
+  }
+});
+
+/* ---------------- AVVIO ---------------- */
+renderPresets(); renderWeights(); syncFilters(); renderMethod(); route(); render();
+</script>
