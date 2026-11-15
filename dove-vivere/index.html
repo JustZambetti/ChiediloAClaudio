@@ -235,7 +235,7 @@ fieldset.q legend + * { clear: both; }
 
 <header class="top gutter">
   <div class="inner top-row">
-    <div class="brand"><h1>Dove vivere</h1><span>51 città europee a confronto</span></div>
+    <div class="brand"><h1>Dove vivere</h1><span id="brandCount">città e comuni europei a confronto</span></div>
     <nav class="tabs" aria-label="Sezioni">
       <a href="#questionario" data-view="questionario">Questionario</a>
       <a href="#classifica" data-view="classifica">Classifica</a>
@@ -254,7 +254,13 @@ fieldset.q legend + * { clear: both; }
       <div class="presets" id="presets"></div>
     </section>
     <section>
-      <div class="eyebrow">Paletti (escludono città)</div>
+      <div class="eyebrow">Dove vivi ora</div>
+      <div class="field"><label for="homeId">Posto attuale</label><select id="homeId"></select></div>
+      <div class="field"><div class="lab"><label for="homeRent">Quanto paghi di affitto</label><output>€/mese</output></div><input type="number" id="homeRent" min="0" step="50"></div>
+    </section>
+    <section>
+      <div class="eyebrow">Paletti (escludono posti)</div>
+      <div class="field"><label for="fSize">Dimensione</label><select id="fSize"><option value="all">Tutti</option><option value="big">Grandi città (oltre 1 milione)</option><option value="mid">Città medie (200 mila – 1 milione)</option><option value="small">Piccole città e comuni (sotto 200 mila)</option></select></div>
       <div class="field"><input type="search" id="q" placeholder="Cerca città o paese…" aria-label="Cerca città o paese"></div>
       <div class="field">
         <div class="lab"><label for="budget">Il tuo reddito netto mensile</label><output>opzionale</output></div>
@@ -388,6 +394,56 @@ const RAW = [
  ['Vilnius','LT',0.75,750,50,1550,3500,-4,23,1700,115,70,70,9,7,2.5,0,0,6.5,3,3,3,'Barocca, verde e in crescita, buon ecosistema fintech; inverni rigidi.'],
  ['Bucarest','RO',2.3,600,42,1200,2500,-1,30,2100,75,70,55,17,6,2.2,0,1,3,3,3,4,'Internet velocissimo, costi bassi e scena IT forte; traffico e servizi pubblici disomogenei.'],
  ['Sofia','BG',1.5,600,42,1100,2500,-1,27,2150,90,63,55,17,7,1.9,0,2,3,3,3,3,'Tra le capitali più economiche dell\'UE, il monte Vitosha in città, flat tax al 10%.'],
+ /* --- città medie e piccoli comuni --- */
+ ['San Sebastián','ES',0.19,1300,60,2000,6500,8,23,1650,135,78,77,7,7,2.0,2,1,7,3,4,4,'Baia della Concha, la cucina migliore di Spagna e stipendi baschi; piove spesso e gli affitti sono tra i più alti del paese.'],
+ ['Santander','ES',0.17,850,50,1600,3200,10,23,1650,125,77,75,8,6,2.0,2,1,9,2,3,3,'Elegante città atlantica, tranquilla e verde, con spiagge urbane; clima piovoso.'],
+ ['Cadice','ES',0.11,850,47,1300,3200,12,28,3000,50,70,72,9,5,2.6,2,0,20,1,4,4,'Città antichissima sull\'oceano, luce e spiagge; disoccupazione molto alta, poco lavoro.'],
+ ['Granada','ES',0.23,750,46,1300,2800,7,34,2900,50,68,74,11,6,2.3,0,2,15,2,5,4,'Alhambra, tapas offerte col bicchiere e Sierra Nevada a 40 minuti; estati molto calde, lavoro scarso.'],
+ ['Girona','ES',0.1,900,52,1600,3500,7,30,2500,65,74,76,10,6,1.5,1,1,9,2,4,3,'Medievale e ordinata, Costa Brava e Pirenei vicini, alta velocità per Barcellona in 40 minuti.'],
+ ['Sitges','ES',0.03,1400,58,1700,5500,10,28,2500,55,78,75,10,5,1.6,2,0,9,2,3,4,'Paese di mare a 40 minuti da Barcellona, molto internazionale e inclusivo; affitti da grande città.'],
+ ['Jávea','ES',0.03,1000,52,1300,3500,12,30,2900,40,80,72,8,2,2.1,2,1,12,1,2,2,'Costa Blanca con una delle comunità straniere più grandi di Spagna, inverni molto miti; serve l\'auto.'],
+ ['Alicante','ES',0.34,850,48,1350,2600,12,31,2950,35,68,74,10,6,1.9,2,0,13,2,3,4,'Spiaggia in città, aeroporto collegato ovunque e costi bassi; lavoro qualificato limitato.'],
+ ['Palma di Maiorca','ES',0.42,1350,55,1600,5000,11,30,2750,55,66,74,10,6,1.5,2,2,8,2,4,4,'Città vera su un\'isola con mare e montagna (Tramuntana); affitti alle stelle per il turismo.'],
+ ['Santa Cruz de Tenerife','ES',0.21,850,49,1350,2500,18,27,2800,30,70,70,9,5,4.3,2,2,15,2,3,3,'Primavera tutto l\'anno, Teide e oceano, costi contenuti; lontana dal continente.'],
+ ['Segovia','ES',0.05,650,47,1350,2200,4,29,2600,60,78,74,8,4,2.2,0,2,9,1,4,2,'Acquedotto romano e Sierra de Guadarrama, 30 minuti di alta velocità da Madrid; inverni freddi.'],
+ ['Alcalá de Henares','ES',0.2,800,50,1600,2600,6,33,2700,60,72,76,10,7,2.0,0,1,10,3,4,3,'Città universitaria patrimonio UNESCO a 35 minuti da Madrid: lavori a Madrid e spendi meno.'],
+ ['Cascais','PT',0.21,1600,55,1400,6000,12,26,2800,80,80,72,7,6,2.8,2,0,6,3,3,3,'Mare e lungomare elegante a 40 minuti di treno da Lisbona; tra i posti più cari del Portogallo.'],
+ ['Ericeira','PT',0.01,1000,48,1100,3800,11,24,2700,80,82,66,6,2,3.0,2,0,6,1,2,2,'Riserva mondiale del surf con molti nomadi digitali; paese piccolo e ventoso d\'inverno.'],
+ ['Lagos','PT',0.03,1000,50,1050,4000,12,29,3100,50,80,64,6,2,3.0,2,0,8,1,3,3,'Algarve: scogliere e spiagge famose, tanti stranieri; d\'inverno si svuota.'],
+ ['Coimbra','PT',0.14,700,44,1100,2400,10,29,2600,100,78,76,8,5,2.6,1,1,7,2,4,3,'Una delle università più antiche d\'Europa, a metà strada tra Lisbona e Porto; costi bassi.'],
+ ['Braga','PT',0.19,700,44,1100,2400,9,27,2400,125,80,72,8,6,2.5,1,1,6,3,4,3,'Giovane, sicura ed economica, polo tech in crescita; inverni molto piovosi.'],
+ ['Trieste','IT',0.2,650,58,1600,2500,6,28,2200,85,70,72,12,6,1.5,2,1,5,2,4,3,'Mitteleuropa sul mare, caffè e Carso, sicura e sottovalutata; bora d\'inverno, popolazione anziana.'],
+ ['Trento','IT',0.12,800,60,1750,3500,1,29,2050,80,74,76,13,7,1.2,0,2,4,3,3,2,'Ai vertici delle classifiche italiane sulla qualità della vita, Dolomiti a due passi, ottimi servizi.'],
+ ['Bolzano','IT',0.11,950,62,1800,5000,0,30,2150,75,78,76,13,7,1.0,0,2,3,3,3,2,'Bilingue tedesco-italiano, ordinata e ricca, montagna ovunque; affitti alti.'],
+ ['Lecce','IT',0.09,550,56,1300,1800,9,30,2600,65,65,58,12,4,1.8,1,0,14,1,4,4,'Barocco e mare del Salento su due lati; sanità e lavoro deboli, d\'estate turismo pieno.'],
+ ['Cagliari','IT',0.15,650,58,1400,2500,11,31,2600,55,64,62,10,4,1.4,2,0,12,2,3,3,'Spiaggia urbana (Poetto) e clima mite; isola, collegata solo in aereo o in nave.'],
+ ['Lucca','IT',0.09,750,60,1500,3500,6,31,2400,80,70,72,13,4,1.3,1,1,7,2,4,3,'Toscana dentro le mura, a mezz\'ora da mare e Apuane, a misura di bici.'],
+ ['Annecy','FR',0.13,1000,68,2300,6500,1,26,1950,115,70,74,9,5,1.0,0,2,5,3,3,3,'Lago turchese e Alpi, vicino a Ginevra; costi alti spinti dai frontalieri.'],
+ ['Montpellier','FR',0.5,750,64,2000,4000,7,29,2650,55,45,77,9,6,1.3,1,1,12,3,4,4,'Giovane e solare, mare a 15 minuti; disoccupazione alta e sicurezza discreta.'],
+ ['Aix-en-Provence','FR',0.15,900,67,2200,5500,7,31,2850,55,55,76,10,6,1.1,1,1,8,3,4,3,'Provenza elegante, mercati e luce, mare a 40 minuti; cara.'],
+ ['Grenoble','FR',0.45,650,63,2200,3000,3,28,2050,95,40,78,13,7,1.2,0,2,8,4,3,3,'Capitale delle Alpi con ricerca e tech forti; conca inquinata e sicurezza bassa.'],
+ ['Biarritz','FR',0.03,1100,67,2000,7500,9,24,1950,140,70,74,7,4,1.7,2,1,7,2,3,3,'Surf e oceano basco, a 30 minuti dalla Spagna; carissima e piovosa.'],
+ ['Locarno','CH',0.06,1400,98,4500,8000,3,28,2300,100,82,75,11,5,0.8,0,2,3,2,3,2,'Il punto più soleggiato della Svizzera, sul Lago Maggiore, si parla italiano; tranquilla e costosa.',{lang:'Italiano',langEase:5,tax:24,english:3}],
+ ['Lucerna','CH',0.22,2000,108,5800,13000,1,25,1650,130,84,75,8,9,1.0,0,2,2,4,4,3,'Lago e montagne da cartolina, tasse più basse di Zurigo; costi svizzeri e svizzero tedesco.'],
+ ['Innsbruck','AT',0.13,1000,66,2400,7000,-1,26,1850,120,70,78,11,8,1.3,0,2,4,3,3,3,'Si scia a 20 minuti dal centro, città universitaria; affitti alti per le dimensioni.'],
+ ['Salisburgo','AT',0.16,1000,67,2500,7500,0,25,1750,135,75,78,10,8,1.6,0,2,4,3,5,3,'Mozart, festival e Alpi; molto turistica e piovosa.'],
+ ['Graz','AT',0.3,750,64,2300,4500,0,26,2050,105,75,78,14,8,1.4,0,1,7,3,4,4,'Universitaria e rilassata, la più economica delle grandi città austriache.'],
+ ['Friburgo','DE',0.23,1000,64,2600,6000,2,26,1800,125,72,76,9,7,1.0,0,2,4,3,4,3,'La città più soleggiata della Germania, tra Foresta Nera e Svizzera, ecologica e universitaria.'],
+ ['Heidelberg','DE',0.16,1000,64,2700,5500,2,26,1700,120,72,78,10,8,1.3,0,1,4,4,4,3,'Castello, università prestigiosa e ricerca biomedica; piccola e molto studentesca.'],
+ ['Utrecht','NL',0.36,1600,72,3000,6000,4,23,1650,130,70,76,9,9,1.8,0,0,4,4,4,4,'Canali come Amsterdam ma più a misura d\'uomo, al centro della rete ferroviaria olandese.'],
+ ['Aarhus','DK',0.36,1100,78,3600,5000,1,21,1700,115,78,78,7,8,2.2,2,0,6,3,4,4,'La seconda città danese, giovane e sul mare, meno cara di Copenaghen.'],
+ ['Bergen','NO',0.29,1200,82,3700,6500,2,19,1250,230,70,75,6,7,2.6,2,2,4,3,4,3,'Fiordi e montagne spettacolari; una delle città più piovose d\'Europa.'],
+ ['Galway','IE',0.09,1600,72,2800,4500,6,18,1300,155,65,55,5,4,2.8,2,1,4.5,3,4,5,'Musica nei pub, oceano e cultura irlandese; affitti altissimi e pioggia costante.'],
+ ['Brno','CZ',0.4,700,48,1600,4500,0,26,1800,100,76,75,13,8,1.6,0,0,3,3,4,4,'Studentesca, tech in crescita e molto più economica di Praga.'],
+ ['Danzica','PL',0.47,800,46,1600,4500,0,22,1650,110,78,66,11,8,2.1,2,0,3,4,4,4,'Città storica sul Baltico con spiagge e polo IT; inverni freddi e ventosi.'],
+ ['Capodistria','SI',0.03,750,54,1500,3500,5,28,2300,90,82,64,13,4,1.2,2,1,4,2,3,2,'Porto istriano a 20 minuti da Trieste, tra mare e Carso; molto tranquilla.'],
+ ['Rovigno','HR',0.015,900,55,1200,5000,6,29,2500,80,85,60,9,2,1.4,2,0,5,1,3,2,'Il borgo più bello dell\'Istria; vive di turismo e d\'inverno è vuoto.'],
+ ['Zara','HR',0.08,650,52,1150,3500,7,30,2600,80,80,60,10,3,1.3,2,1,7,2,3,3,'Dalmazia con isole e tramonti, costi contenuti; poco lavoro qualificato.'],
+ ['La Canea','GR',0.11,600,52,950,2800,12,30,2900,55,76,55,9,3,2.8,2,2,10,1,4,3,'Creta: porto veneziano, spiagge e montagne; servono l\'auto e un po\' di greco.'],
+ ['Pafo','CY',0.07,1000,60,1500,3000,12,31,3300,35,76,58,13,2,3.4,2,1,5,2,3,3,'Tanti residenti stranieri, sole tutto l\'anno e tasse cipriote; tranquilla, senza mezzi pubblici.'],
+ ['Plovdiv','BG',0.35,450,40,1000,1800,0,31,2250,75,70,55,18,6,1.9,0,1,3,2,4,3,'Una delle città più antiche d\'Europa, vivace e molto economica.'],
+ ['Cluj-Napoca','RO',0.41,600,43,1400,2700,-3,26,1900,95,80,58,16,6,2.4,0,1,2,4,3,4,'La Silicon Valley della Romania: università, IT e festival; inverni freddi.'],
+ ['Brașov','RO',0.25,500,42,1100,2300,-4,25,1900,100,80,55,12,6,2.4,0,2,3,2,3,3,'Centro medievale tra i Carpazi, sci a 20 minuti, costi molto bassi.'],
 ];
 
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
@@ -400,6 +456,13 @@ const BASE = RAW.map(r => {
   c.note = o.note;
   return Object.assign(c, o.ov || {});
 });
+
+function allBase() {
+  return BASE.concat((state.custom || []).map(cu => {
+    const src = BASE.find(b => b.id === cu.from) || BASE[0];
+    return {...src, id: cu.id, name: cu.name, note: cu.note, custom: true, from: cu.from};
+  }));
+}
 
 /* ---------------- CRITERI ---------------- */
 const nf = new Intl.NumberFormat('it-IT');
@@ -465,7 +528,8 @@ const PRESETS = [
 const KEY = 'dove-vivere-v1';
 const DEFAULT_STATE = () => ({
   weights: {...DEFAULT_W}, inv: {}, preset: 'Equilibrato',
-  f: {q:'', rentMax:3000, janMin:-5, safetyMin:0, noVisa:false, euro:false, noIT:false, sea:false, mount:false, budget:false, fav:false},
+  f: {q:'', rentMax:3000, janMin:-5, safetyMin:0, noVisa:false, euro:false, noIT:false, sea:false, mount:false, budget:false, fav:false, size:'all'},
+  home: {id:'madrid', rent:1200}, custom: [],
   budget: '', fav: {}, notes: {}, compare: [], overrides: {}, sort: 'score', quiz: {}, myProfile: null,
 });
 let state = DEFAULT_STATE();
@@ -474,20 +538,30 @@ function merge(base, s) {
   const out = {...base, ...s};
   out.f = {...base.f, ...(s.f || {})};
   out.weights = {...base.weights, ...(s.weights || {})};
-  out.compare = (s.compare || []).filter(id => BASE.some(c => c.id === id));
+  out.home = {...base.home, ...(s.home || {})};
+  out.compare = (s.compare || []).slice(0, 4);
   return out;
 }
 let saveT;
 function save() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }, 200); }
 
 /* ---------------- CALCOLO ---------------- */
-let cities = [];
+let cities = [], homeCity = null;
 function compute() {
-  cities = BASE.map(c => {
+  cities = allBase().map(c => {
     const x = {...c, ...(state.overrides[c.id] || {})};
     x.cost = Math.round(x.rent + x.costIdx * 15);
     x.ppp = x.salary / x.cost;
     return x;
+  });
+  const home = cities.find(c => c.id === state.home.id) || cities.find(c => c.id === 'madrid');
+  homeCity = home;
+  const myRent = Number(state.home.rent) || home.rent;
+  cities.forEach(c => {
+    c.myRent = Math.round(c.rent * myRent / home.rent / 10) * 10;
+    c.rentDelta = c.myRent - myRent;
+    c.costVsHome = c.cost / home.cost - 1;
+    c.isHome = c.id === home.id;
   });
   const tv = (cr, c) => cr.log ? Math.log(cr.v(c)) : cr.v(c);
   CRIT.forEach(cr => { const vs = cities.map(c => tv(cr, c)); cr.min = Math.min(...vs); cr.max = Math.max(...vs); });
@@ -525,6 +599,9 @@ function passes(c) {
   if (f.mount && c.mount < 1) return false;
   if (f.budget && budgetVal() && budgetVal() < c.cost) return false;
   if (f.fav && !state.fav[c.id]) return false;
+  if (f.size === 'big' && c.pop < 1) return false;
+  if (f.size === 'mid' && (c.pop < 0.2 || c.pop >= 1)) return false;
+  if (f.size === 'small' && c.pop >= 0.2) return false;
   return true;
 }
 const label = cr => state.inv[cr.k] ? cr.il : cr.l;
@@ -565,18 +642,23 @@ function renderWeights() {
 }
 function syncFilters() {
   const f = state.f;
-  $('#q').value = f.q; $('#budget').value = state.budget;
+  $('#q').value = f.q; $('#budget').value = state.budget; $('#fSize').value = f.size;
+  $('#homeId').innerHTML = allBase().sort((a, b) => a.name.localeCompare(b.name, 'it')).map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  $('#homeId').value = state.home.id; $('#homeRent').value = state.home.rent;
   $('#rentMax').value = f.rentMax; $('#rentMaxOut').textContent = f.rentMax >= 3000 ? 'nessun limite' : eur(f.rentMax);
   $('#janMin').value = f.janMin; $('#janMinOut').textContent = f.janMin <= -5 ? 'qualsiasi' : sgn(f.janMin) + ' °C';
   $('#safetyMin').value = f.safetyMin; $('#safetyMinOut').textContent = f.safetyMin ? f.safetyMin + '/100' : 'qualsiasi';
   [['fNoVisa','noVisa'],['fEuro','euro'],['fNoIT','noIT'],['fSea','sea'],['fMount','mount'],['fBudget','budget'],['fFav','fav']].forEach(([id, k]) => $('#' + id).checked = f[k]);
 }
 
+const pctTxt = n => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(Math.round(n * 100)) + '%';
+const deltaTxt = n => (n > 0 ? '+' : n < 0 ? '−' : '±') + nf.format(Math.abs(n));
 function factChips(c) {
   const b = budgetVal();
   const left = b ? b - c.cost : null;
   const chips = [
-    `<span class="fact">${eur(c.cost)}/mese</span>`,
+    c.isHome ? `<span class="fact" style="color:var(--accent)">vivi qui · affitto ${eur(Number(state.home.rent) || c.rent)}</span>` : `<span class="fact ${c.rentDelta <= 0 ? 'good' : 'bad'}" title="Stima di quanto pagheresti per una casa equivalente alla tua">casa come la tua ≈ ${eur(c.myRent)} (${deltaTxt(c.rentDelta)})</span>`,
+    `<span class="fact" title="Costo della vita totale rispetto a ${esc(homeCity.name)}">${eur(c.cost)}/mese${c.isHome ? '' : ' · ' + pctTxt(c.costVsHome)}</span>`,
     `<span class="fact">${sgn(c.janT)}° gen</span>`,
     `<span class="fact">${nf.format(c.sun)} h sole</span>`,
     `<span class="fact">sicur. ${c.safety}</span>`,
@@ -598,7 +680,7 @@ function renderRanking() {
   };
   list.sort(sorters[state.sort] || sorters.score);
   const activeW = CRIT.filter(c => state.weights[c.k] > 0).length;
-  const head = `<div class="view-head"><div><h2>Le città giuste per te</h2><p><span class="num">${list.length}</span> città su ${cities.length} superano i tuoi paletti. Il punteggio pesa ${activeW} criteri in base a quanto contano per te: cambia i pesi nel pannello dei criteri e la classifica si aggiorna.</p></div>
+  const head = `<div class="view-head"><div><h2>I posti giusti per te</h2><p><span class="num">${list.length}</span> posti su ${cities.length} superano i tuoi paletti. Il punteggio pesa ${activeW} criteri in base a quanto contano per te: cambia i pesi nel pannello dei criteri e la classifica si aggiorna.</p></div>
     <label class="sort">Ordina per <select id="sort"><option value="score">Punteggio</option><option value="cost">Costo della vita</option><option value="left">Potere d'acquisto</option><option value="name">Nome</option></select></label></div>`;
   const cta = state.myProfile ? '' : `<div class="cta">Non sai da dove partire? <a href="#questionario">Rispondi al questionario</a> e pesi e paletti si impostano da soli.</div>`;
   if (!list.length) {
@@ -608,7 +690,7 @@ function renderRanking() {
       <li class="row ${state.sort === 'score' && i < 3 ? 'top3' : ''}" data-open="${c.id}" tabindex="0">
         <span class="pos">${i + 1}</span>
         ${plate(c)}
-        <div class="who"><strong>${esc(c.name)}</strong><small>${esc(c.country)} · ${esc(c.lang)}</small></div>
+        <div class="who"><strong>${esc(c.name)}</strong><small>${esc(c.country)} · ${popFmt(c.pop)}${c.custom ? ' · aggiunto da te' : ''}</small></div>
         <div class="facts">${factChips(c)}</div>
         <div class="score"><b>${c.score}<small>/100</small></b><div class="bar"><span style="width:${c.score}%"></span></div></div>
         <div class="acts">
@@ -617,6 +699,16 @@ function renderRanking() {
         </div>
       </li>`).join('') + `</ol>`;
   }
+  const simOpts = BASE.slice().sort((a, b) => a.name.localeCompare(b.name, 'it')).map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.country)})</option>`).join('');
+  $('#view-classifica').insertAdjacentHTML('beforeend', `<details class="addplace" style="margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px">
+    <summary style="cursor:pointer;font-weight:600">Manca un posto? Aggiungilo</summary>
+    <p style="color:var(--muted);font-size:13.5px;margin:8px 0 12px">Scrivi il nome del comune e scegli il posto della lista più simile (stesso paese, clima e dimensioni simili): ne copio i valori come punto di partenza, poi li correggi dalla scheda.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px;align-items:end">
+      <div class="field"><label for="newName">Nome del posto</label><input type="search" id="newName" placeholder="es. Cercedilla"></div>
+      <div class="field"><label for="newFrom">Simile a</label><select id="newFrom">${simOpts}</select></div>
+      <button class="btn primary" id="newAdd">Aggiungi e correggi i dati</button>
+    </div><span class="msg" id="newMsg" role="status"></span></details>`);
+  $('#brandCount').textContent = cities.length + ' città e comuni europei a confronto';
   $('#sort').value = state.sort;
   $('#panelSummary').textContent = `${activeW} pesi · ${list.length} città`;
 }
@@ -634,7 +726,9 @@ function renderCompare() {
     const best = (cr) => Math.max(...sel.map(c => c.norm[cr.k]));
     html += `<div class="tablewrap"><table class="cmp"><thead><tr><th></th>${sel.map(c => `<th>${esc(c.name)}<div style="font-family:var(--f-body);font-size:12px;font-weight:400;color:var(--muted)">${esc(c.country)}</div></th>`).join('')}</tr></thead><tbody>
       <tr><th class="crit">Punteggio per te</th>${sel.map(c => { const top = Math.max(...sel.map(x => x.score)); return `<td class="v ${c.score === top ? 'best' : ''}" style="font-size:16px">${c.score}/100</td>`; }).join('')}</tr>
-      <tr><th class="crit">Posizione</th>${sel.map(c => `<td class="v">#${c.overall} di ${cities.length}</td>`).join('')}</tr>`;
+      <tr><th class="crit">Posizione</th>${sel.map(c => `<td class="v">#${c.overall} di ${cities.length}</td>`).join('')}</tr>
+      <tr><th class="crit">Casa come la tua</th>${sel.map(c => `<td class="v">${c.isHome ? 'vivi qui' : '≈ ' + eur(c.myRent) + ' (' + deltaTxt(c.rentDelta) + ')'}</td>`).join('')}</tr>
+      <tr><th class="crit">Costi rispetto a ${esc(homeCity.name)}</th>${sel.map(c => `<td class="v">${c.isHome ? '—' : pctTxt(c.costVsHome)}</td>`).join('')}</tr>`;
     if (budgetVal()) html += `<tr><th class="crit">Col tuo reddito ti restano</th>${sel.map(c => { const l = budgetVal() - c.cost; return `<td class="v" style="color:var(${l >= 0 ? '--good' : '--bad'})">${l >= 0 ? '' : '−'}${eur(Math.abs(l))}</td>`; }).join('')}</tr>`;
     GROUPS.forEach(g => {
       html += `<tr class="grp"><th colspan="${sel.length + 1}">${esc(g)}</th></tr>`;
@@ -656,8 +750,10 @@ function renderMethod() {
   <div class="prose">
     <div class="warn"><strong>I dati sono stime indicative.</strong> Li ho compilati arrotondando valori 2024–2025 dalle fonti qui sotto, ma non sono scaricati in tempo reale. Servono a restringere la rosa: prima di decidere, verifica affitti, tasse e burocrazia sulle fonti ufficiali. Se trovi un numero sbagliato o più aggiornato, correggilo dalla scheda della città con "Correggi i dati".</div>
     <h3>Come si calcola il punteggio</h3>
-    <p>Per ogni criterio le 51 città vengono messe su una scala da 0 (la peggiore) a 1 (la migliore). Il punteggio finale è la media di questi valori, pesata con i pesi da 0 a 5 che scegli tu, espressa su 100. Un criterio con peso 0 non conta. Per alcuni criteri puoi invertire la preferenza (per esempio inverni freddi se scii, o città piccola invece di grande).</p>
+    <p>Per ogni criterio tutti i posti della lista vengono messe su una scala da 0 (la peggiore) a 1 (la migliore). Il punteggio finale è la media di questi valori, pesata con i pesi da 0 a 5 che scegli tu, espressa su 100. Un criterio con peso 0 non conta. Per alcuni criteri puoi invertire la preferenza (per esempio inverni freddi se scii, o città piccola invece di grande).</p>
     <p>I paletti invece non pesano: escludono e basta. Usali per le cose su cui non scendi a compromessi, e usa i pesi per tutto il resto.</p>
+    <p>"Casa come la tua" parte da quello che paghi oggi: se a Madrid paghi 1.200 € e l'affitto medio in centro è 1.350 €, la tua casa costa circa l'89% della media, e in ogni altro posto ti mostro l'89% dell'affitto medio locale. È un ordine di grandezza, non un preventivo. Cambi posto attuale e affitto nel pannello "Dove vivi ora".</p>
+    <p>Per i piccoli comuni i dati sono ancora più approssimativi che per le grandi città, perché le fonti li coprono poco. Se vuoi valutare un comune che non c'è, aggiungilo dal fondo della classifica partendo dal posto più simile.</p>
     <p>Il costo della vita è una stima per una persona sola: affitto di un monolocale o bilocale in centro più l'indice spese di Numbeo moltiplicato per 15 €. Se indichi il tuo reddito netto (per esempio se lavori da remoto) vedi quanto ti resta ogni mese in ogni città.</p>
     <h3>Criteri e fonti</h3>
     <div class="tablewrap"><table class="src"><thead><tr><th>Criterio</th><th>Cosa misura</th><th>Fonte</th></tr></thead><tbody>
@@ -688,7 +784,9 @@ function renderDrawer() {
   const b = budgetVal();
   const ov = state.overrides[c.id] || {};
   const tiles = [
-    ['Costo stimato', eur(c.cost) + '/mese'], ['Affitto centro', eur(c.rent)], ['Stipendio medio', eur(c.salary)],
+    ['Costo stimato', eur(c.cost) + '/mese'], ['Affitto medio centro', eur(c.rent)],
+    c.isHome ? ['Il tuo affitto', eur(Number(state.home.rent) || c.rent)] : ['Casa come la tua', '≈ ' + eur(c.myRent) + ' (' + deltaTxt(c.rentDelta) + ')'],
+    c.isHome ? ['Posto attuale', 'vivi qui'] : ['Costi vs ' + homeCity.name, pctTxt(c.costVsHome)], ['Stipendio medio', eur(c.salary)],
     b ? ['Col tuo reddito', (b - c.cost >= 0 ? '+' : '−') + eur(Math.abs(b - c.cost))] : ['Potere d’acquisto', Math.round(c.ppp * 100) + '%'],
     ['Posizione', '#' + c.overall + ' di ' + cities.length], ['Per i cittadini UE', c.status === 'UK' ? 'serve visto' : c.status === 'CH' ? 'permesso B' : 'libera circolazione'],
   ];
@@ -699,6 +797,7 @@ function renderDrawer() {
       <button class="btn ${state.compare.includes(c.id) ? 'primary' : ''}" data-cmp="${c.id}">${state.compare.includes(c.id) ? '⇄ Nel confronto' : '⇄ Confronta'}</button>
       <button class="btn" id="dEdit">${editing ? 'Fine correzioni' : 'Correggi i dati'}</button>
       ${Object.keys(ov).length ? `<button class="btn danger" id="dResetOv">Ripristina dati originali</button>` : ''}
+      ${c.custom ? `<button class="btn danger" id="dDelCustom">Elimina questo posto</button>` : ''}
     </div>
     <div class="note">${esc(c.note)}</div>
     <div class="tiles">${tiles.map(([k, v]) => `<div class="tile"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div>`;
@@ -768,6 +867,19 @@ document.addEventListener('click', e => {
   if (t.id === 'clearFilters') { state.f = DEFAULT_STATE().f; syncFilters(); render(); return; }
   if (t.id === 'dClose') { closeDrawer(); return; }
   if (t.id === 'dEdit') { editing = !editing; renderDrawer(); return; }
+  if (t.id === 'dDelCustom') {
+    const id = openId; state.custom = state.custom.filter(x => x.id !== id); delete state.overrides[id]; delete state.fav[id]; delete state.notes[id];
+    state.compare = state.compare.filter(x => x !== id); if (state.home.id === id) state.home.id = 'madrid';
+    closeDrawer(); syncFilters(); render(); return;
+  }
+  if (t.id === 'newAdd') {
+    const name = $('#newName').value.trim(), from = $('#newFrom').value;
+    if (!name) { $('#newMsg').textContent = 'Scrivi il nome del posto da aggiungere.'; $('#newMsg').style.color = 'var(--bad)'; return; }
+    let id = 'mio-' + slug(name), n = 2; while (allBase().some(c => c.id === id)) id = 'mio-' + slug(name) + '-' + n++;
+    const src = BASE.find(b => b.id === from);
+    state.custom.push({id, name, from, note: `Aggiunto da te. I valori sono copiati da ${src.name}: correggili con "Correggi i dati".`});
+    syncFilters(); render(); openDrawer(id); editing = true; renderDrawer(); return;
+  }
   if (t.id === 'dResetOv') { delete state.overrides[openId]; render(); return; }
   if (t.id === 'ioExport') { $('#ioText').value = JSON.stringify(state, null, 1); flash('Codice generato.'); return; }
   if (t.id === 'ioCopy') {
@@ -813,6 +925,7 @@ document.addEventListener('input', e => {
   else if (t.id === 'rentMax') f.rentMax = Number(t.value);
   else if (t.id === 'janMin') f.janMin = Number(t.value);
   else if (t.id === 'safetyMin') f.safetyMin = Number(t.value);
+  else if (t.id === 'homeRent') { state.home.rent = t.value; render(); return; }
   else if (t.id === 'dNotes') { if (t.value.trim()) state.notes[openId] = t.value; else delete state.notes[openId]; save(); return; }
   else return;
   syncFilters(); render();
@@ -821,9 +934,11 @@ document.addEventListener('change', e => {
   const t = e.target, map = {fNoVisa:'noVisa', fEuro:'euro', fNoIT:'noIT', fSea:'sea', fMount:'mount', fBudget:'budget', fFav:'fav'};
   if (map[t.id]) { state.f[map[t.id]] = t.checked; render(); }
   else if (t.id === 'sort') { state.sort = t.value; render(); }
+  else if (t.id === 'fSize') { state.f.size = t.value; render(); }
+  else if (t.id === 'homeId') { state.home.id = t.value; render(); }
   else if (t.id === 'cmpAdd' && t.value) { toggleCmp(t.value); render(); }
   else if (t.dataset.ed) {
-    const k = t.dataset.ed, v = Number(t.value), base = BASE.find(c => c.id === openId);
+    const k = t.dataset.ed, v = Number(t.value), base = allBase().find(c => c.id === openId);
     if (t.value === '' || !isFinite(v)) return;
     const o = state.overrides[openId] = state.overrides[openId] || {};
     if (v === base[k]) delete o[k]; else o[k] = v;
