@@ -9,7 +9,7 @@ App per capire in quale città europea potresti voler vivere. È una singola pag
 - **Pesi da 0 a 5** per ogni criterio, che decidi tu; il punteggio su 100 è la media pesata della posizione di ogni città su ogni criterio.
 - **Profili pronti**: Equilibrato, Lavoro da remoto, Carriera, Famiglia, Sole e mare, Vicino a casa.
 - **Paletti** che escludono le città: affitto massimo, temperatura minima a gennaio, sicurezza minima, niente visto, solo euro, mare o montagna vicini, escludi Italia, nel mio budget.
-- **Dove vivi ora**: posto attuale e affitto che paghi (di base Madrid, 1.200 €). Per ogni posto stima quanto costerebbe una casa come la tua e di quanto cambia il costo della vita.
+- **Dove vivi ora**: posto attuale e spesa mensile totale (di base Madrid, 1.200 € affitto incluso). Per ogni posto stima quanto spenderesti con lo stesso tenore di vita.
 - **Aggiungi un posto**: qualsiasi comune che manca, partendo dai valori del posto più simile.
 - **Il tuo reddito netto**: mostra quanto ti resta ogni mese in ogni città.
 - **Scheda città** con tutti i valori, la posizione su ogni criterio, i regimi fiscali per chi si trasferisce e un campo per i tuoi appunti.

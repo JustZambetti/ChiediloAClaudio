@@ -256,7 +256,7 @@ fieldset.q legend + * { clear: both; }
     <section>
       <div class="eyebrow">Dove vivi ora</div>
       <div class="field"><label for="homeId">Posto attuale</label><select id="homeId"></select></div>
-      <div class="field"><div class="lab"><label for="homeRent">Quanto paghi di affitto</label><output>€/mese</output></div><input type="number" id="homeRent" min="0" step="50"></div>
+      <div class="field"><div class="lab"><label for="homeSpend">Quanto spendi al mese, in tutto</label><output>affitto incluso</output></div><input type="number" id="homeSpend" min="0" step="50"></div>
     </section>
     <section>
       <div class="eyebrow">Paletti (escludono posti)</div>
@@ -529,7 +529,7 @@ const KEY = 'dove-vivere-v1';
 const DEFAULT_STATE = () => ({
   weights: {...DEFAULT_W}, inv: {}, preset: 'Equilibrato',
   f: {q:'', rentMax:3000, janMin:-5, safetyMin:0, noVisa:false, euro:false, noIT:false, sea:false, mount:false, budget:false, fav:false, size:'all'},
-  home: {id:'madrid', rent:1200}, custom: [],
+  home: {id:'madrid', spend:1200}, custom: [],
   budget: '', fav: {}, notes: {}, compare: [], overrides: {}, sort: 'score', quiz: {}, myProfile: null,
 });
 let state = DEFAULT_STATE();
@@ -538,7 +538,7 @@ function merge(base, s) {
   const out = {...base, ...s};
   out.f = {...base.f, ...(s.f || {})};
   out.weights = {...base.weights, ...(s.weights || {})};
-  out.home = {...base.home, ...(s.home || {})};
+  out.home = {id: (s.home && s.home.id) || base.home.id, spend: (s.home && (s.home.spend ?? s.home.rent)) || base.home.spend};
   out.compare = (s.compare || []).slice(0, 4);
   return out;
 }
@@ -556,10 +556,10 @@ function compute() {
   });
   const home = cities.find(c => c.id === state.home.id) || cities.find(c => c.id === 'madrid');
   homeCity = home;
-  const myRent = Number(state.home.rent) || home.rent;
+  const mySpend = Number(state.home.spend) || home.cost;
   cities.forEach(c => {
-    c.myRent = Math.round(c.rent * myRent / home.rent / 10) * 10;
-    c.rentDelta = c.myRent - myRent;
+    c.myCost = Math.round(c.cost * mySpend / home.cost / 10) * 10;
+    c.costDelta = c.myCost - mySpend;
     c.costVsHome = c.cost / home.cost - 1;
     c.isHome = c.id === home.id;
   });
@@ -644,7 +644,7 @@ function syncFilters() {
   const f = state.f;
   $('#q').value = f.q; $('#budget').value = state.budget; $('#fSize').value = f.size;
   $('#homeId').innerHTML = allBase().sort((a, b) => a.name.localeCompare(b.name, 'it')).map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
-  $('#homeId').value = state.home.id; $('#homeRent').value = state.home.rent;
+  $('#homeId').value = state.home.id; $('#homeSpend').value = state.home.spend;
   $('#rentMax').value = f.rentMax; $('#rentMaxOut').textContent = f.rentMax >= 3000 ? 'nessun limite' : eur(f.rentMax);
   $('#janMin').value = f.janMin; $('#janMinOut').textContent = f.janMin <= -5 ? 'qualsiasi' : sgn(f.janMin) + ' °C';
   $('#safetyMin').value = f.safetyMin; $('#safetyMinOut').textContent = f.safetyMin ? f.safetyMin + '/100' : 'qualsiasi';
@@ -657,8 +657,8 @@ function factChips(c) {
   const b = budgetVal();
   const left = b ? b - c.cost : null;
   const chips = [
-    c.isHome ? `<span class="fact" style="color:var(--accent)">vivi qui · affitto ${eur(Number(state.home.rent) || c.rent)}</span>` : `<span class="fact ${c.rentDelta <= 0 ? 'good' : 'bad'}" title="Stima di quanto pagheresti per una casa equivalente alla tua">casa come la tua ≈ ${eur(c.myRent)} (${deltaTxt(c.rentDelta)})</span>`,
-    `<span class="fact" title="Costo della vita totale rispetto a ${esc(homeCity.name)}">${eur(c.cost)}/mese${c.isHome ? '' : ' · ' + pctTxt(c.costVsHome)}</span>`,
+    c.isHome ? `<span class="fact" style="color:var(--accent)">vivi qui · spendi ${eur(Number(state.home.spend) || c.cost)}/mese</span>` : `<span class="fact ${c.costDelta <= 0 ? 'good' : 'bad'}" title="Stima di quanto spenderesti qui con il tuo stesso tenore di vita (${pctTxt(c.costVsHome)} rispetto a ${esc(homeCity.name)})">tu spenderesti ≈ ${eur(c.myCost)} (${deltaTxt(c.costDelta)})</span>`,
+    `<span class="fact" title="Costo medio stimato per un single in centro">media ${eur(c.cost)}</span>`,
     `<span class="fact">${sgn(c.janT)}° gen</span>`,
     `<span class="fact">${nf.format(c.sun)} h sole</span>`,
     `<span class="fact">sicur. ${c.safety}</span>`,
@@ -727,7 +727,7 @@ function renderCompare() {
     html += `<div class="tablewrap"><table class="cmp"><thead><tr><th></th>${sel.map(c => `<th>${esc(c.name)}<div style="font-family:var(--f-body);font-size:12px;font-weight:400;color:var(--muted)">${esc(c.country)}</div></th>`).join('')}</tr></thead><tbody>
       <tr><th class="crit">Punteggio per te</th>${sel.map(c => { const top = Math.max(...sel.map(x => x.score)); return `<td class="v ${c.score === top ? 'best' : ''}" style="font-size:16px">${c.score}/100</td>`; }).join('')}</tr>
       <tr><th class="crit">Posizione</th>${sel.map(c => `<td class="v">#${c.overall} di ${cities.length}</td>`).join('')}</tr>
-      <tr><th class="crit">Casa come la tua</th>${sel.map(c => `<td class="v">${c.isHome ? 'vivi qui' : '≈ ' + eur(c.myRent) + ' (' + deltaTxt(c.rentDelta) + ')'}</td>`).join('')}</tr>
+      <tr><th class="crit">Tu spenderesti al mese</th>${sel.map(c => `<td class="v">${c.isHome ? eur(Number(state.home.spend) || c.cost) + ' (oggi)' : '≈ ' + eur(c.myCost) + ' (' + deltaTxt(c.costDelta) + ')'}</td>`).join('')}</tr>
       <tr><th class="crit">Costi rispetto a ${esc(homeCity.name)}</th>${sel.map(c => `<td class="v">${c.isHome ? '—' : pctTxt(c.costVsHome)}</td>`).join('')}</tr>`;
     if (budgetVal()) html += `<tr><th class="crit">Col tuo reddito ti restano</th>${sel.map(c => { const l = budgetVal() - c.cost; return `<td class="v" style="color:var(${l >= 0 ? '--good' : '--bad'})">${l >= 0 ? '' : '−'}${eur(Math.abs(l))}</td>`; }).join('')}</tr>`;
     GROUPS.forEach(g => {
@@ -752,7 +752,7 @@ function renderMethod() {
     <h3>Come si calcola il punteggio</h3>
     <p>Per ogni criterio tutti i posti della lista vengono messe su una scala da 0 (la peggiore) a 1 (la migliore). Il punteggio finale è la media di questi valori, pesata con i pesi da 0 a 5 che scegli tu, espressa su 100. Un criterio con peso 0 non conta. Per alcuni criteri puoi invertire la preferenza (per esempio inverni freddi se scii, o città piccola invece di grande).</p>
     <p>I paletti invece non pesano: escludono e basta. Usali per le cose su cui non scendi a compromessi, e usa i pesi per tutto il resto.</p>
-    <p>"Casa come la tua" parte da quello che paghi oggi: se a Madrid paghi 1.200 € e l'affitto medio in centro è 1.350 €, la tua casa costa circa l'89% della media, e in ogni altro posto ti mostro l'89% dell'affitto medio locale. È un ordine di grandezza, non un preventivo. Cambi posto attuale e affitto nel pannello "Dove vivi ora".</p>
+    <p>"Tu spenderesti" parte da quanto spendi oggi in tutto, affitto incluso. Se a Madrid spendi 1.200 € al mese e la stima per un single in centro è 2.175 €, il tuo tenore di vita costa circa il 55% della media; in ogni altro posto ti mostro il 55% del costo della vita locale. Vale se mantieni le stesse abitudini (casa condivisa o fuori centro, stesse uscite). È un ordine di grandezza, non un preventivo. Cambi posto attuale e spesa nel pannello "Dove vivi ora".</p>
     <p>Per i piccoli comuni i dati sono ancora più approssimativi che per le grandi città, perché le fonti li coprono poco. Se vuoi valutare un comune che non c'è, aggiungilo dal fondo della classifica partendo dal posto più simile.</p>
     <p>Il costo della vita è una stima per una persona sola: affitto di un monolocale o bilocale in centro più l'indice spese di Numbeo moltiplicato per 15 €. Se indichi il tuo reddito netto (per esempio se lavori da remoto) vedi quanto ti resta ogni mese in ogni città.</p>
     <h3>Criteri e fonti</h3>
@@ -785,8 +785,8 @@ function renderDrawer() {
   const ov = state.overrides[c.id] || {};
   const tiles = [
     ['Costo stimato', eur(c.cost) + '/mese'], ['Affitto medio centro', eur(c.rent)],
-    c.isHome ? ['Il tuo affitto', eur(Number(state.home.rent) || c.rent)] : ['Casa come la tua', '≈ ' + eur(c.myRent) + ' (' + deltaTxt(c.rentDelta) + ')'],
-    c.isHome ? ['Posto attuale', 'vivi qui'] : ['Costi vs ' + homeCity.name, pctTxt(c.costVsHome)], ['Stipendio medio', eur(c.salary)],
+    c.isHome ? ['Spendi oggi', eur(Number(state.home.spend) || c.cost) + '/mese'] : ['Tu spenderesti', '≈ ' + eur(c.myCost) + '/mese'],
+    c.isHome ? ['Posto attuale', 'vivi qui'] : ['Rispetto a ' + homeCity.name, deltaTxt(c.costDelta) + ' € (' + pctTxt(c.costVsHome) + ')'], ['Stipendio medio', eur(c.salary)],
     b ? ['Col tuo reddito', (b - c.cost >= 0 ? '+' : '−') + eur(Math.abs(b - c.cost))] : ['Potere d’acquisto', Math.round(c.ppp * 100) + '%'],
     ['Posizione', '#' + c.overall + ' di ' + cities.length], ['Per i cittadini UE', c.status === 'UK' ? 'serve visto' : c.status === 'CH' ? 'permesso B' : 'libera circolazione'],
   ];
@@ -925,7 +925,7 @@ document.addEventListener('input', e => {
   else if (t.id === 'rentMax') f.rentMax = Number(t.value);
   else if (t.id === 'janMin') f.janMin = Number(t.value);
   else if (t.id === 'safetyMin') f.safetyMin = Number(t.value);
-  else if (t.id === 'homeRent') { state.home.rent = t.value; render(); return; }
+  else if (t.id === 'homeSpend') { state.home.spend = t.value; render(); return; }
   else if (t.id === 'dNotes') { if (t.value.trim()) state.notes[openId] = t.value; else delete state.notes[openId]; save(); return; }
   else return;
   syncFilters(); render();
