@@ -4,6 +4,7 @@ App per capire in quale città europea potresti voler vivere. È una singola pag
 
 ## Cosa fa
 
+- **Questionario** (18 domande, circa tre minuti): le risposte impostano da sole pesi e paletti e creano il profilo "Il mio profilo". Mentre rispondi vedi le prime tre città.
 - **51 città europee** (UE, SEE, Svizzera e Regno Unito) con 26 criteri ciascuna, raggruppati in: Soldi, Clima, Sicurezza e salute, Lavoro, Vita quotidiana, Stile di vita.
 - **Pesi da 0 a 5** per ogni criterio, che decidi tu; il punteggio su 100 è la media pesata della posizione di ogni città su ogni criterio.
 - **Profili pronti**: Equilibrato, Lavoro da remoto, Carriera, Famiglia, Sole e mare, Vicino a casa.

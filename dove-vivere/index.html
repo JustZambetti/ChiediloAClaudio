@@ -55,7 +55,7 @@ header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; 
 .brand { display: flex; align-items: baseline; gap: 10px; }
 .brand h1 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; }
 .brand span { color: var(--muted); font-size: 13px; }
-nav.tabs { display: flex; gap: 4px; margin-left: auto; background: var(--sunken); padding: 4px; border-radius: 999px; }
+nav.tabs { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; max-width: 100%; background: var(--sunken); padding: 4px; border-radius: 999px; }
 nav.tabs a { text-decoration: none; color: var(--muted); padding: 6px 14px; border-radius: 999px; font-weight: 500; font-size: 14px; white-space: nowrap; }
 nav.tabs a[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
 nav.tabs a .badge { font-family: var(--f-data); font-size: 11px; background: var(--accent); color: var(--surface); border-radius: 999px; padding: 0 6px; margin-left: 4px; }
@@ -152,6 +152,7 @@ ol.rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction
 .btn:hover { border-color: var(--accent); }
 .btn.primary { background: var(--accent); color: var(--surface); border-color: var(--accent); }
 .btn.danger { color: var(--bad); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
 
 /* Drawer dettaglio */
 .scrim { position: fixed; inset: 0; background: rgb(10 14 20 / .45); z-index: 40; }
@@ -204,6 +205,31 @@ table.src th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em
 .io textarea { min-height: 110px; font-family: var(--f-data); font-size: 12px; }
 .row-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .msg { font-size: 13px; color: var(--good); }
+/* Questionario */
+body[data-view="questionario"] aside.panel, body[data-view="questionario"] .panel-toggle { display: none !important; }
+body[data-view="questionario"] .layout { grid-template-columns: minmax(0, 1fr); max-width: 820px; }
+.cta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: var(--accent-soft); border-radius: var(--r); padding: 12px 16px; margin-bottom: 14px; font-size: 14px; }
+.cta a { color: var(--accent); font-weight: 600; }
+form.quiz { display: flex; flex-direction: column; gap: 14px; }
+fieldset.q { border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 16px 18px; margin: 0; min-width: 0; display: grid; gap: 10px; }
+fieldset.q.done { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+fieldset.q legend { float: left; width: 100%; padding: 0; font-family: var(--f-display); font-weight: 700; font-size: 18px; display: flex; gap: 10px; align-items: baseline; }
+fieldset.q legend + * { clear: both; }
+.qn { font-family: var(--f-data); font-size: 12px; font-weight: 500; color: var(--muted); min-width: 22px; }
+.qh { margin: 0; color: var(--muted); font-size: 13.5px; }
+.qtag { font-family: var(--f-body); font-size: 11px; font-weight: 500; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; }
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 8px; }
+.opt { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; cursor: pointer; background: var(--bg); }
+.opt:hover { border-color: var(--accent); }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt input { accent-color: var(--accent); margin: 3px 0 0; flex: none; }
+.opt b { display: block; font-weight: 600; font-size: 14px; }
+.opt small { display: block; color: var(--muted); font-size: 12.5px; }
+.qfoot { position: sticky; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px; align-items: center; }
+.qfoot .prog { display: grid; gap: 5px; min-width: 0; font-size: 13px; color: var(--muted); }
+.qfoot .prog strong { color: var(--ink); }
+.qfoot .btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 560px) { .qfoot { grid-template-columns: minmax(0, 1fr); } .qfoot .btns { justify-content: stretch; } .qfoot .btns .btn { flex: 1; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -211,9 +237,10 @@ table.src th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em
   <div class="inner top-row">
     <div class="brand"><h1>Dove vivere</h1><span>51 città europee a confronto</span></div>
     <nav class="tabs" aria-label="Sezioni">
+      <a href="#questionario" data-view="questionario">Questionario</a>
       <a href="#classifica" data-view="classifica">Classifica</a>
       <a href="#confronta" data-view="confronta">Confronta <span class="badge" id="cmpCount" hidden>0</span></a>
-      <a href="#metodo" data-view="metodo">Dati e metodo</a>
+      <a href="#metodo" data-view="metodo">Dati</a>
     </nav>
   </div>
 </header>
@@ -253,6 +280,7 @@ table.src th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em
   </aside>
 
   <main id="main" style="min-width:0">
+    <section id="view-questionario" data-viewpane="questionario" hidden></section>
     <section id="view-classifica" data-viewpane="classifica"></section>
     <section id="view-confronta" data-viewpane="confronta" hidden></section>
     <section id="view-metodo" data-viewpane="metodo" hidden></section>
@@ -438,7 +466,7 @@ const KEY = 'dove-vivere-v1';
 const DEFAULT_STATE = () => ({
   weights: {...DEFAULT_W}, inv: {}, preset: 'Equilibrato',
   f: {q:'', rentMax:3000, janMin:-5, safetyMin:0, noVisa:false, euro:false, noIT:false, sea:false, mount:false, budget:false, fav:false},
-  budget: '', fav: {}, notes: {}, compare: [], overrides: {}, sort: 'score',
+  budget: '', fav: {}, notes: {}, compare: [], overrides: {}, sort: 'score', quiz: {}, myProfile: null,
 });
 let state = DEFAULT_STATE();
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = merge(DEFAULT_STATE(), s); } catch (e) {}
@@ -514,7 +542,8 @@ const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>'
 const plate = c => `<span class="plate" aria-label="${esc(c.country)}">${['CH','NO','UK'].includes(c.cc) ? '' : '<b>EU</b>'}<i>${c.cc}</i></span>`;
 
 function renderPresets() {
-  $('#presets').innerHTML = PRESETS.map(p => `<button class="chip-btn" data-preset="${esc(p.n)}" aria-pressed="${state.preset === p.n}">${esc(p.n)}</button>`).join('');
+  const list = state.myProfile ? [{n:'Il mio profilo'}, ...PRESETS] : PRESETS;
+  $('#presets').innerHTML = list.map(p => `<button class="chip-btn" data-preset="${esc(p.n)}" aria-pressed="${state.preset === p.n}">${esc(p.n)}</button>`).join('');
 }
 function renderWeights() {
   const openGroups = new Set([...document.querySelectorAll('details.group[open]')].map(d => d.dataset.g));
@@ -571,10 +600,11 @@ function renderRanking() {
   const activeW = CRIT.filter(c => state.weights[c.k] > 0).length;
   const head = `<div class="view-head"><div><h2>Le città giuste per te</h2><p><span class="num">${list.length}</span> città su ${cities.length} superano i tuoi paletti. Il punteggio pesa ${activeW} criteri in base a quanto contano per te: cambia i pesi nel pannello dei criteri e la classifica si aggiorna.</p></div>
     <label class="sort">Ordina per <select id="sort"><option value="score">Punteggio</option><option value="cost">Costo della vita</option><option value="left">Potere d'acquisto</option><option value="name">Nome</option></select></label></div>`;
+  const cta = state.myProfile ? '' : `<div class="cta">Non sai da dove partire? <a href="#questionario">Rispondi al questionario</a> e pesi e paletti si impostano da soli.</div>`;
   if (!list.length) {
-    $('#view-classifica').innerHTML = head + `<div class="empty"><p>Nessuna città supera tutti i paletti.</p><button class="btn" id="clearFilters">Togli i paletti</button></div>`;
+    $('#view-classifica').innerHTML = cta + head + `<div class="empty"><p>Nessuna città supera tutti i paletti.</p><button class="btn" id="clearFilters">Togli i paletti</button></div>`;
   } else {
-    $('#view-classifica').innerHTML = head + `<ol class="rank">` + list.map((c, i) => `
+    $('#view-classifica').innerHTML = cta + head + `<ol class="rank">` + list.map((c, i) => `
       <li class="row ${state.sort === 'score' && i < 3 ? 'top3' : ''}" data-open="${c.id}" tabindex="0">
         <span class="pos">${i + 1}</span>
         ${plate(c)}
@@ -699,9 +729,10 @@ function render() {
 }
 
 /* ---------------- VISTE ---------------- */
-const VIEWS = ['classifica', 'confronta', 'metodo'];
+const VIEWS = ['questionario', 'classifica', 'confronta', 'metodo'];
 function route() {
   const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'classifica';
+  document.body.dataset.view = v;
   document.querySelectorAll('[data-viewpane]').forEach(el => el.hidden = el.dataset.viewpane !== v);
   document.querySelectorAll('nav.tabs a').forEach(a => { if (a.dataset.view === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
 }
@@ -718,7 +749,7 @@ document.addEventListener('click', e => {
   const t = e.target.closest('button, [data-open]');
   if (!t) return;
   if (t.dataset.preset) {
-    const p = PRESETS.find(x => x.n === t.dataset.preset);
+    const p = t.dataset.preset === 'Il mio profilo' ? {n:'Il mio profilo', ...state.myProfile} : PRESETS.find(x => x.n === t.dataset.preset);
     state.weights = {...p.w}; state.inv = {...p.inv}; state.preset = p.n;
     renderPresets(); renderWeights(); render(); return;
   }
@@ -802,6 +833,132 @@ document.addEventListener('change', e => {
   }
 });
 
+/* ---------------- QUESTIONARIO ---------------- */
+const QUIZ = [
+ {id:'work', q:'Come ti manterrai?', h:'Decide quanto contano gli stipendi locali rispetto al costo della vita.', opts:[
+  {l:'Lavoro da remoto', d:'Il mio reddito non dipende dalla città', set:{w:{cost:5,tax:3,net:5}}},
+  {l:'Cerco lavoro sul posto', d:'Contano stipendi e opportunità', set:{w:{jobs:5,ppp:5,salary:3,unemp:3,cost:2}}},
+  {l:'Pensione o rendita', d:'Contano i costi e la sanità', set:{w:{cost:5,health:4,tax:3}}},
+  {l:'Non lo so ancora', d:'Un po\' di tutto', set:{w:{jobs:3,ppp:3,cost:3}}}]},
+ {id:'income', type:'number', q:'Quanto guadagni al mese, netto?', h:'Facoltativo. Serve a mostrarti quanto ti resta ogni mese in ogni città. Resta solo nel tuo browser.'},
+ {id:'rent', q:'Quanto vuoi spendere al massimo di affitto?', h:'Monolocale o bilocale in zona centrale. Le città più care vengono escluse.', opts:[
+  {l:'Fino a 700 €', set:{f:{rentMax:700}}}, {l:'Fino a 1.000 €', set:{f:{rentMax:1000}}}, {l:'Fino a 1.500 €', set:{f:{rentMax:1500}}}, {l:'Nessun limite', set:{f:{rentMax:3000}}}]},
+ {id:'who', q:'Con chi ti trasferisci?', opts:[
+  {l:'Per conto mio', set:{w:{night:3}}}, {l:'In coppia', set:{w:{culture:2}}}, {l:'Con figli, o li avrò presto', d:'Sicurezza, sanità e aria pulita salgono', set:{w:{safety:5,health:5,air:4,buy:3,transit:2}}}]},
+ {id:'climate', q:'Qual è il tuo clima ideale?', opts:[
+  {l:'Caldo quasi tutto l\'anno', d:'Inverni intorno ai 10 °C o più', set:{w:{jan:5,sun:4,jul:1},inv:{jul:true}}},
+  {l:'Mite, con le stagioni', d:'Come il Centro-Nord Italia', set:{w:{jan:3,sun:3,jul:3}}},
+  {l:'Fresco, estati non afose', d:'Preferisco il freddo al caldo', set:{w:{jul:5,jan:2},inv:{jan:true}}},
+  {l:'Mi è indifferente', set:{}}]},
+ {id:'grey', q:'Quanto ti pesano cielo grigio e pioggia?', opts:[
+  {l:'Molto, mi buttano giù', set:{w:{sun:5,rain:4}}}, {l:'Un po\'', set:{w:{sun:3,rain:2}}}, {l:'Per niente', set:{}}]},
+ {id:'janmin', q:'Quanto freddo sopporti d\'inverno?', h:'Esclude le città con un gennaio più freddo di così.', opts:[
+  {l:'Anche sotto zero', set:{f:{janMin:-5}}}, {l:'Non sotto 0 °C di media', set:{f:{janMin:0}}}, {l:'Almeno 5 °C', set:{f:{janMin:5}}}, {l:'Almeno 10 °C', set:{f:{janMin:10}}}]},
+ {id:'nature', q:'Mare o montagna?', opts:[
+  {l:'Mare', set:{w:{sea:5}}}, {l:'Montagna', set:{w:{mount:5}}}, {l:'Entrambi', set:{w:{sea:3,mount:3}}}, {l:'Non mi servono', set:{}}]},
+ {id:'size', q:'Che tipo di città?', opts:[
+  {l:'Grande metropoli', d:'Tante cose da fare, ritmo alto', set:{w:{size:3,culture:3}}},
+  {l:'Media', d:'Tra 500 mila e 2 milioni di abitanti', set:{}},
+  {l:'Piccola e tranquilla', d:'Sotto il mezzo milione', set:{w:{size:3},inv:{size:true}}},
+  {l:'Mi è indifferente', set:{}}]},
+ {id:'lang', q:'Che rapporto vuoi avere con la lingua locale?', opts:[
+  {l:'Restare su italiano o lingue simili', d:'Spagnolo, portoghese, francese', set:{w:{lang:5}}},
+  {l:'Mi basta vivere in inglese', set:{w:{english:5,lang:1}}},
+  {l:'Imparo volentieri qualsiasi lingua', set:{w:{english:1}}}]},
+ {id:'home', q:'Quanto conta restare vicino all\'Italia?', h:'Per tornare da famiglia e amici.', opts:[
+  {l:'Molto, voglio tornare spesso', set:{w:{flight:5}}}, {l:'Abbastanza', set:{w:{flight:3}}}, {l:'Poco', set:{w:{flight:1}}}, {l:'Per niente', set:{}}]},
+ {id:'free', multi:true, q:'Come passi il tempo libero?', opts:[
+  {l:'Esco spesso e conosco gente', set:{w:{night:5,culture:2}}}, {l:'Musei, teatri, buon cibo', set:{w:{culture:5,night:1}}},
+  {l:'Sport e natura all\'aperto', set:{w:{air:3,sea:2,mount:2,sun:2}}}, {l:'Vita tranquilla', set:{}}]},
+ {id:'car', q:'Vuoi vivere senza auto?', opts:[
+  {l:'Sì: mezzi, bici e piedi', set:{w:{transit:5}}}, {l:'Preferibilmente', set:{w:{transit:3}}}, {l:'L\'auto non mi pesa', set:{w:{transit:1}}}]},
+ {id:'safety', q:'Quanto conta la sicurezza?', opts:[
+  {l:'È la priorità', d:'Escludo le città meno sicure', set:{w:{safety:5},f:{safetyMin:60}}},
+  {l:'Molto importante', set:{w:{safety:4}}}, {l:'Normale', d:'Come in una grande città italiana', set:{w:{safety:2}}}]},
+ {id:'health', q:'Sanità e qualità dell\'aria?', opts:[
+  {l:'Fondamentali', set:{w:{health:5,air:4}}}, {l:'Importanti', set:{w:{health:3,air:2}}}, {l:'Non ci penso molto', set:{w:{health:1}}}]},
+ {id:'money', multi:true, q:'Soldi e burocrazia: cosa ti interessa?', opts:[
+  {l:'Pagare meno tasse possibile', set:{w:{tax:5}}}, {l:'Uffici pubblici semplici e digitali', set:{w:{bureau:5}}},
+  {l:'Comprare casa', set:{w:{buy:4}}}, {l:'Stipendi alti', set:{w:{salary:4,ppp:3}}}]},
+ {id:'values', q:'Quanto conta vivere in un paese aperto e inclusivo?', h:'Misurato dalla tutela dei diritti civili, in particolare delle persone LGBTQ+.', opts:[
+  {l:'Molto', set:{w:{lgbt:5}}}, {l:'Abbastanza', set:{w:{lgbt:2}}}, {l:'Non è un criterio per me', set:{}}]},
+ {id:'must', multi:true, q:'Ci sono paletti assoluti?', h:'Le città che non li rispettano spariscono dalla classifica.', opts:[
+  {l:'Solo paesi con l\'euro', set:{f:{euro:true}}}, {l:'Niente visto di lavoro', d:'Esclude il Regno Unito', set:{f:{noVisa:true}}},
+  {l:'Voglio vivere fuori dall\'Italia', set:{f:{noIT:true}}}, {l:'Mare entro un\'ora', set:{f:{sea:true}}}]},
+];
+const answered = q => { const a = state.quiz[q.id]; return q.type === 'number' ? !!a : q.multi ? Array.isArray(a) && a.length > 0 : a != null; };
+function quizProfile(answers) {
+  const w = zeroW({}), inv = {}, f = {...DEFAULT_STATE().f};
+  let budget = '';
+  QUIZ.forEach(q => {
+    const a = answers[q.id];
+    if (q.type === 'number') { if (a) budget = a; return; }
+    if (a == null) return;
+    (q.multi ? a : [a]).forEach(i => {
+      const set = (q.opts[i] || {}).set || {};
+      Object.entries(set.w || {}).forEach(([k, v]) => w[k] = Math.max(w[k], v));
+      Object.assign(inv, set.inv || {}); Object.assign(f, set.f || {});
+    });
+  });
+  if (!Object.values(w).some(Boolean)) Object.assign(w, DEFAULT_W);
+  return {w, inv, f, budget};
+}
+function quizPreview() {
+  const saved = state, prof = quizProfile(state.quiz);
+  state = {...saved, weights: prof.w, inv: prof.inv, f: prof.f, budget: prof.budget || saved.budget};
+  compute();
+  const top = cities.filter(passes).sort((a, b) => b.score - a.score).slice(0, 3);
+  const n = cities.filter(passes).length;
+  state = saved; compute();
+  return {top, n};
+}
+function renderQuiz() {
+  $('#view-questionario').innerHTML = `<div class="view-head"><div><h2>Il tuo questionario</h2><p>${QUIZ.length} domande, circa tre minuti. Ogni risposta imposta pesi e paletti al posto tuo; alla fine vedi la classifica fatta su di te. Puoi saltare le domande che non ti interessano e cambiare tutto dopo.</p></div></div>
+  <form class="quiz" id="quizForm">` + QUIZ.map((q, qi) => {
+    const a = state.quiz[q.id];
+    let inner;
+    if (q.type === 'number') {
+      inner = `<input type="number" id="quiz-${q.id}" data-quiz="${q.id}" min="0" step="100" placeholder="es. 2500" value="${esc(a || '')}" aria-label="${esc(q.q)}" style="max-width:240px">`;
+    } else {
+      inner = `<div class="opts">` + q.opts.map((o, i) => {
+        const checked = q.multi ? (a || []).includes(i) : a === i;
+        return `<label class="opt"><input type="${q.multi ? 'checkbox' : 'radio'}" name="q-${q.id}" id="q-${q.id}-${i}" data-quiz="${q.id}" value="${i}" ${checked ? 'checked' : ''}><span><b>${esc(o.l)}</b>${o.d ? `<small>${esc(o.d)}</small>` : ''}</span></label>`;
+      }).join('') + `</div>`;
+    }
+    return `<fieldset class="q ${answered(q) ? 'done' : ''}" data-q="${q.id}"><legend><span class="qn">${String(qi + 1).padStart(2, '0')}</span><span>${esc(q.q)}${q.multi ? ' <span class="qtag">più risposte</span>' : ''}</span></legend>${q.h ? `<p class="qh">${esc(q.h)}</p>` : ''}${inner}</fieldset>`;
+  }).join('') + `<div class="qfoot" id="quizFoot"></div></form>`;
+  renderQuizFoot();
+}
+function renderQuizFoot() {
+  const done = QUIZ.filter(answered).length;
+  const pv = done ? quizPreview() : null;
+  const pvTxt = pv ? (pv.top.length ? `Per ora in testa: <strong>${pv.top.map(c => esc(c.name)).join(', ')}</strong> · ${pv.n} città rimaste` : 'Con questi paletti non resta nessuna città: allentane qualcuno.') : 'Rispondi alla prima domanda per vedere le prime città.';
+  $('#quizFoot').innerHTML = `<div class="prog"><span><strong class="num">${done}</strong> di ${QUIZ.length} risposte · ${pvTxt}</span><div class="bar"><span style="width:${done / QUIZ.length * 100}%"></span></div></div>
+    <div class="btns"><button type="button" class="btn" id="quizClear">Azzera risposte</button><button type="button" class="btn primary" id="quizApply" ${done ? '' : 'disabled'}>Vedi la mia classifica</button></div>`;
+  document.querySelectorAll('fieldset.q').forEach(fs => fs.classList.toggle('done', answered(QUIZ.find(q => q.id === fs.dataset.q))));
+}
+function onQuizInput(t) {
+  const q = QUIZ.find(x => x.id === t.dataset.quiz);
+  if (q.type === 'number') { if (t.value) state.quiz[q.id] = t.value; else delete state.quiz[q.id]; }
+  else if (q.multi) { state.quiz[q.id] = [...document.querySelectorAll(`input[name="q-${q.id}"]:checked`)].map(i => Number(i.value)); }
+  else state.quiz[q.id] = Number(t.value);
+  save(); renderQuizFoot();
+}
+function applyQuiz() {
+  const p = quizProfile(state.quiz);
+  state.weights = p.w; state.inv = p.inv; state.f = p.f; if (p.budget) state.budget = p.budget;
+  state.myProfile = {w: {...p.w}, inv: {...p.inv}}; state.preset = 'Il mio profilo'; state.sort = 'score';
+  renderPresets(); renderWeights(); syncFilters(); render();
+  location.hash = 'classifica'; window.scrollTo(0, 0);
+}
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.quiz) onQuizInput(e.target); });
+document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.quiz && e.target.type === 'number') onQuizInput(e.target); });
+document.addEventListener('click', e => {
+  if (e.target.id === 'quizApply') applyQuiz();
+  if (e.target.id === 'quizClear') { state.quiz = {}; save(); renderQuiz(); }
+});
+
 /* ---------------- AVVIO ---------------- */
-renderPresets(); renderWeights(); syncFilters(); renderMethod(); route(); render();
+if (!location.hash && !state.myProfile) location.hash = 'questionario';
+renderPresets(); renderWeights(); syncFilters(); renderMethod(); renderQuiz(); route(); render();
 </script>
